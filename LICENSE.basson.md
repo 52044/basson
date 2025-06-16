@@ -1,0 +1,3 @@
+free use, except BASS itself. Refer to LICENSE.BASS.md
+
+idk what write here...

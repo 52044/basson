@@ -1,0 +1,12 @@
+# Venv and cache
+__pycache__
+*venv
+
+# Developer tools
+.vscode
+*.old
+develop/
+*.egg-info/
+
+# DLLs
+dll
