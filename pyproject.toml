@@ -1,6 +1,6 @@
 [project]
 name = "basson"
-version = "0.1"
+version = "0.1dev"
 authors = [
    { name="52044", email="lev.portnyagin@vk.com" },]
 description = "Easy-to-use wrapper for BASS audio library"

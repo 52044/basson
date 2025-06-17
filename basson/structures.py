@@ -1,6 +1,8 @@
 from typing import TypedDict
-from . import BASS as bass
-from . import utils
+from .. import BASS as bass
+from .. import utils
+
+
 
 class Config:
     def __init__(self, lib):
@@ -13,7 +15,6 @@ class Config:
     
     @property
     def algorithm3d(self) -> int:  return self._getconf(bass.BASS_CONFIG_3DALGORITHM)
-        
     @algorithm3d.setter
     def algorithm3d(self, algo: int): self._setconf(bass.BASS_CONFIG_3DALGORITHM, algo)
 

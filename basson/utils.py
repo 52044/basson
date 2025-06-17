@@ -1,10 +1,9 @@
 # Some useful utiliies
 
-from . import header
 import ctypes
 
 @staticmethod
-def getOS() -> str:
+def get_os() -> str:
     """ Returns OS name"""
     import platform
     import os
@@ -38,7 +37,7 @@ def getOS() -> str:
         return 'unknown'
 
 @staticmethod
-def decodeVersion(version:int) -> str:
+def decode_version(version:int) -> str:
     ''' Convers HEX value to human-understandable text
     
     :param version: Value in hex
@@ -53,14 +52,14 @@ def decodeVersion(version:int) -> str:
     return f"{major}.{minor}.{patch}.{build}"
 
 @staticmethod
-def readPtr(ptr:header.PTR, read_type:str = 'str', struct_type = None):
+def read_ptr(ptr:ctypes.c_void_p, read_type:str = 'str', struct_type = None):
    if struct_type is not None: return ctypes.cast(ptr, ctypes.POINTER(struct_type)).contents
    match read_type:
-      case 'str': return ctypes.cast(ptr, header.CHARP).value.decode('utf-8') # type: ignore
+      case 'str': return ctypes.cast(ptr, Header.CHARP).value.decode('utf-8') # type: ignore
       case _: raise ValueError(f"Invalid cast type: {read_type}")
 
 @staticmethod
-def makePtr(value, value_type:str = 'str', struct_type = None):
+def make_ptr(value, value_type:str = 'str', struct_type = None):
     #FIXME probably it's wrong, cuz need to keep created pointer, but for now it works
     if struct_type is not None: return ctypes.byref(struct_type), value
     match value_type:
@@ -71,6 +70,6 @@ def makePtr(value, value_type:str = 'str', struct_type = None):
         case _: raise ValueError(f"Invalid value type: {value_type}")
 
 @staticmethod
-def safeDecode(b: bytes) -> str:
+def safe_decode(b: bytes) -> str:
     import locale
     return b.decode(locale.getpreferredencoding(), errors='replace')

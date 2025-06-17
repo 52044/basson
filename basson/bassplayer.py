@@ -2,7 +2,7 @@
 
 from . import BASS
 from . import utils
-from . import header as bass
+from .wrapper import Header as bass
 from . import structures
 
 class BassPlayer:

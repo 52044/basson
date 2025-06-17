@@ -1,8 +1,5 @@
-from . import header
 from . import utils
-from . import structures
 
-from .BASS import BASS
-from .bassplayer import BassPlayer
+from .bass import BASS
 
-__all__ = ["BASS", "BassPlayer", "header", "utils", "structures"]
+__all__ = ["BASS", "utils"]
