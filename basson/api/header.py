@@ -1,9 +1,11 @@
-# Converted BASS.h to Python
+# Pubic part of BASS.h header
 
-from enum import IntFlag
+from enum import IntFlag, IntEnum
+from .types import MINUSONE
 
+#region OG header
 # Error codes returned by BASS_ErrorGetCode
-class BassError(IntFlag):
+class BassErrorsOptions(IntEnum):
     OK           = 0 # all is OK
     MEM          = 1 # memory error
     FILEOPEN     = 2 # can't open the file
@@ -46,84 +48,32 @@ class BassError(IntFlag):
     PROTOCOL     = 48 # unsupported protocol
     DENIED       = 49 # access denied
     UNKNOWN      = -1 # some other mystery problem
+    UNKNOWN      = MINUSONE # other representation of -1
 
-# BASS_SetConfig options
-class BassConfig(IntFlag):
-    BUFFER          = 0
-    UPDATEPERIOD    = 1
-    GVOL_SAMPLE     = 4
-    GVOL_STREAM     = 5
-    GVOL_MUSIC      = 6
-    CURVE_VOL       = 7
-    CURVE_PAN       = 8
-    FLOATDSP        = 9
-    ALGORITHM3D     = 10
-    NET_TIMEOUT     = 11
-    NET_BUFFER      = 12
-    PAUSE_NOPLAY    = 13
-    NET_PREBUF      = 15
-    NET_PASSIVE     = 18
-    REC_BUFFER      = 19
-    NET_PLAYLIST    = 21
-    MUSIC_VIRTUAL   = 22
-    VERIFY          = 23
-    UPDATETHREADS   = 24
-    DEV_BUFFER      = 27
-    REC_LOOPBACK    = 28
-    VISTA_TRUEPOS   = 30
-    IOS_SESSION     = 34
-    IOS_MIXAUDIO    = 34 # Alias for BASS_CONFIG_IOS_SESSION
-    DEV_DEFAULT     = 36
-    NET_READTIMEOUT = 37
-    VISTA_SPEAKERS  = 38
-    IOS_SPEAKER     = 39
-    MF_DISABLE      = 40
-    HANDLES         = 41
-    UNICODE         = 42
-    SRC             = 43
-    SRC_SAMPLE      = 44
-    ASYNCFILE_BUFFER = 45
-    OGG_PRESCAN     = 47
-    MF_VIDEO        = 48
-    AIRPLAY         = 49
-    DEV_NONSTOP     = 50
-    IOS_NOCATEGORY  = 51
-    VERIFY_NET      = 52
-    DEV_PERIOD      = 53
-    FLOAT           = 54
-    NET_SEEK        = 56
-    AM_DISABLE      = 58
-    NET_PLAYLIST_DEPTH = 59
-    NET_PREBUF_WAIT = 60
-    ANDROID_SESSIONID = 62
-    WASAPI_PERSIST  = 65
-    REC_WASAPI      = 66
-    ANDROID_AAUDIO  = 67
-    SAMPLE_ONEHANDLE = 69
-    NET_META        = 71
-    NET_RESTRATE    = 72
-    REC_DEFAULT     = 73
-    NORAMP          = 74
-    # BASS_SetConfigPtr options
-    NET_AGENT       = 16
-    NET_PROXY       = 17
-    IOS_NOTIFY      = 46
-    ANDROID_JAVAVM  = 63
-    LIBSSL          = 64
-    FILENAME        = 75
-
+#TODO is this var using anywhere??
 BASS_CONFIG_THREAD          = 0x40000000 # flag: thread-specific setting
 
 # BASS_CONFIG_IOS_SESSION flags
-BASS_IOS_SESSION_MIX        = 1
-BASS_IOS_SESSION_DUCK       = 2
-BASS_IOS_SESSION_AMBIENT    = 4
-BASS_IOS_SESSION_SPEAKER    = 8
-BASS_IOS_SESSION_DISABLE    = 16
-BASS_IOS_SESSION_DEACTIVATE = 32
-BASS_IOS_SESSION_AIRPLAY    = 64
-BASS_IOS_SESSION_BTHFP      = 128
-BASS_IOS_SESSION_BTA2DP     = 0x100
+class BassIOSSessionFlags(IntFlag):
+    ''' Flags, using in `BassConfig.ios_seesion`'''
+    MIX        = 1
+    '''Allow other apps to be heard at the same time.'''
+    DUCK       = 2
+    '''Allow other apps to be heard at the same time but reduce their volume level.'''
+    AMBIENT    = 4
+    '''Use the "ambient" category. '''
+    SPEAKER    = 8
+    '''Route the output to the speaker instead of the receiver when recording.'''
+    DISABLE    = 16
+    '''Disable BASS's audio session configuration management so that the app can handle that itself.'''
+    DEACTIVATE = 32
+    '''Deactivate the audio session when nothing is playing or recording. It is otherwise only deactivated when there are no initialized devices and during interruptions. '''
+    AIRPLAY    = 64
+    '''Allow playback on Airplay devices when recording (Airplay is always allowed when only playing). '''
+    BTHFP      = 128
+    '''Allow Bluetooth HFP (hands-free) devices when recording (Bluetooth is always allowed when only playing).'''
+    BTA2DP     = 0x100
+    '''Allow Bluetooth A2DP devices when recording (Bluetooth is always allowed when only playing).'''
 
 # BASS_Init flags
 class BassDeviceFlags(IntFlag):
@@ -143,6 +93,15 @@ class BassDeviceFlags(IntFlag):
     AUDIOTRACK      = 0x20000 # use AudioTrack output
     DSOUND          = 0x40000 # use DirectSound output
     SOFTWARE        = 0x80000 # disable hardware/fastpath output
+
+# software 3D mixing algorithms (used with BASS_CONFIG_3DALGORITHM)
+class Bass3DAlorithmsOptions(IntEnum):
+    DEFAULT          = 0
+    '''If at least 4 speakers are available then the sound is panned among them'''
+    OFF              = 1
+    '''Left and right panning on only 2 speakers is used'''
+    FULL             = 2
+    LIGHT            = 3
 
 # DirectSound interfaces (for use with BASS_GetDSoundObject)
 BASS_OBJECT_DS              = 1 # IDirectSound
@@ -170,15 +129,6 @@ BASS_DEVICE_TYPE_DISPLAYPORT = 0x40000000
 
 # BASS_GetDeviceInfo flags
 BASS_DEVICES_AIRPLAY        = 0x1000000
-
-# BASS_INFO flags (from DSOUND.H)
-DSCAPS_EMULDRIVER           = 0x00000020 # device does not have hardware DirectSound support
-DSCAPS_CERTIFIED            = 0x00000040 # device driver has been certified by Microsoft
-DSCAPS_HARDWARE             = 0x80000000 # hardware mixed
-
-# BASS_RECORDINFO flags (from DSOUND.H)
-DSCCAPS_EMULDRIVER          = DSCAPS_EMULDRIVER # device does not have hardware DirectSound recording support
-DSCCAPS_CERTIFIED           = DSCAPS_CERTIFIED # device driver has been certified by Microsoft
 
 # defines for formats field of BASS_RECORDINFO (from MMSYSTEM.H)
 WAVE_FORMAT_1M08            = 0x00000001 # 11.025 kHz, Mono,   8-bit
@@ -312,11 +262,7 @@ BASS_3DMODE_NORMAL          = 0 # normal 3D processing
 BASS_3DMODE_RELATIVE        = 1 # position is relative to the listener
 BASS_3DMODE_OFF             = 2 # no 3D processing
 
-# software 3D mixing algorithms (used with BASS_CONFIG_3DALGORITHM)
-BASS_3DALG_DEFAULT          = 0
-BASS_3DALG_OFF              = 1
-BASS_3DALG_FULL             = 2
-BASS_3DALG_LIGHT            = 3
+
 
 # BASS_SampleGetChannel flags
 BASS_SAMCHAN_NEW            = 1 # get a new playback channel
@@ -438,7 +384,6 @@ BASS_LEVEL_RMS = 4 # get RMS levels
 BASS_LEVEL_VOLPAN = 8   # apply VOL/PAN attributes to the levels
 BASS_LEVEL_NOREMOVE = 16 # don't remove data from recording buffer
 
-
 # BASS_ChannelGetTags types : what's returned
 BASS_TAG_ID3 = 0 # ID3v1 tags : TAG_ID3 structure
 BASS_TAG_ID3V2 = 1 # ID3v2 tags : variable length block
@@ -531,3 +476,47 @@ BASS_IOSNOTIFY_INTERRUPT = 1 # interruption started
 BASS_IOSNOTIFY_INTERRUPT_END = 2 # interruption ended
 #endregion
 
+#region Custom headers
+# BASS_CONFIG_NET_PLAYLIST
+class BassNetPlaylistOptions(IntEnum):
+    NEVER = 0
+    ONLYSTREAMCREATEURL = 1
+    STREAMCREATEFILE = 2
+
+# BASS_CONFIG_NORAMP
+class BassNorampOptions(IntEnum):
+    ENABLE = 0
+    DISABLE = 1
+    RAMPINGINOFF = 2
+    RAMPINGOUTOFF = 3
+
+# BASS_CONFIG_SCR
+class BassSamplerateConversionOptions(IntEnum):
+    LINEAR = 0
+    POINT8SINC = 1
+    POINT16SINC = 2
+    POINT32SINC = 3
+    POINT64SINC = 4
+
+# Bass.IsStarted
+class BassStatusOptions(IntEnum):
+    NOTSTARTED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+
+# BASS.GetInfo.flags
+class BassInfoFlags(IntFlag):
+    EMULDRIVER = 0x00000020
+    CERTIFIED = 0x00000040
+    HARDWARE = 0x80000000
+
+class BassDXVersionOptions(IntEnum):
+    DX9 = 9
+    DX8 = 8
+    DX7 = 7
+    DX5 = 5
+    NONE = 0
+
+# BASS_RECORDINFO flags (from DSOUND.H)
+DSCCAPS_EMULDRIVER          = 0x00000020 # device does not have hardware DirectSound recording support
+DSCCAPS_CERTIFIED           = 0x00000040 # device driver has been certified by Microsoft

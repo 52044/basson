@@ -55,7 +55,7 @@ def decode_version(version:int) -> str:
 def read_ptr(ptr:ctypes.c_void_p, read_type:str = 'str', struct_type = None):
    if struct_type is not None: return ctypes.cast(ptr, ctypes.POINTER(struct_type)).contents
    match read_type:
-      case 'str': return ctypes.cast(ptr, Header.CHARP).value.decode('utf-8') # type: ignore
+      case 'str': return ctypes.cast(ptr, ctypes.c_char_p).value.decode('utf-8')
       case _: raise ValueError(f"Invalid cast type: {read_type}")
 
 @staticmethod
