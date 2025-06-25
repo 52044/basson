@@ -37,6 +37,12 @@ def get_os() -> str:
         return 'unknown'
 
 @staticmethod
+def get_locale() -> str:
+    ''' Return OS locale encoder name '''
+    import locale
+    return locale.getpreferredencoding()
+
+@staticmethod
 def decode_version(version:int) -> str:
     ''' Convers HEX value to human-understandable text
     

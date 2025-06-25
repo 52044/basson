@@ -1,7 +1,10 @@
 from .api import api
 from .api import header
-from . import structures
+from .api import structures as cstrct
+from . import structures as pstrct
+from . import utils
 
+# region BASS
 class BASS():
     def __init__(self, dll_path:str|None=None):
         ''' Python-frendly wrapper over BASS library
@@ -12,7 +15,7 @@ class BASS():
         if dll_path == None: raise NotImplementedError('Autodetection of dll is not implemented yet.')#TODO
         self.bass = api.BASS(dll_path, True)
         
-        self.config = structures.BassConfig(self.bass)
+        self.config = pstrct.BassConfig(self.bass)
 
     def __delattr__(self, name):
         #Safe closing
@@ -82,6 +85,29 @@ class BASS():
         ''' Status of output device '''
         return self.bass.IsStarted()
     
-    #getdeviceinfo
-    #getinfo
+    def device_info(self, device:int) -> pstrct.BassDeviceInfo:
+        ''' Retrives information on an output device'''
+        info = cstrct.BASS_DEVICEINFO()
+        self.bass.GetDeviceInfo(device, info)
+        return {
+            'driver': info.driver.decode(),
+            'flags': info.flags,
+            'name': info.name.decode(utils.get_locale())
+        }
+    
+    def info(self) -> pstrct.BassInfo:
+        ''' Get information of current using device. '''
+        info = cstrct.BASS_INFO()
+        self.bass.GetInfo(info)
+        return {
+            'dsver': info.dsver,
+            'flags': info.flags,
+            'freq': info.freq,
+            'initflags': info.initflags,
+            'latency': info.latency,
+            'minbuf': info.minbuf,
+            'speakers': info.speakers
+        }
+    
+    #TODO bass plugins
 #endregion

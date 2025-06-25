@@ -413,19 +413,19 @@ class BassConfig:
     def wasapi_persist(self, persist:bool):
         self._setconf(cfgo.WASAPI_PERSIST, persist)
 
-class DeviceInfo(TypedDict):
+class BassDeviceInfo(TypedDict):
     ''' Dictionary for using with `Device` and `RecordDevice` properties'''
     name: str
     ''' Description of the device '''
-    flags: str
-    ''' The device's current status, a combination of flags'''#TODO flags
+    flags: h.BassDeviceFlags
+    ''' The device's current status, a combination of flags'''
     driver: str 
     ''' Driver identification '''
 
 class BassInfo(TypedDict):
     ''' Dictionary for using with `Info` property'''
     flags: h.BassDeviceFlags
-    ''' The device's DirectSound capabilities, a combination of flags''' #TODO flags
+    ''' The device's DirectSound capabilities, a combination of flags'''
     minbuf: int
     ''' The minimum buffer length (rounded up to the nearest millisecond) to avoid stuttering playback '''
     dsver: h.BassDXVersionOptions
@@ -437,7 +437,7 @@ class BassInfo(TypedDict):
     `0` = none of the DX9/8/7/5 features are available'''
     latency: int
     ''' The average delay (rounded up to the nearest millisecond) for channel playback to start and be heard '''
-    initfalgs: h.BassDeviceFlags
+    initflags: h.BassDeviceFlags
     ''' The flags parameter of the `Init` call. This will include any flags that were applied automatically'''
     speakers: int
     ''' The number of available speakers, which can be accessed via the speaker assignment flags '''

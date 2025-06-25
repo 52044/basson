@@ -47,7 +47,7 @@ class BassErrorsOptions(IntEnum):
     UNSTREAMABLE = 47 # unstreamable file
     PROTOCOL     = 48 # unsupported protocol
     DENIED       = 49 # access denied
-    UNKNOWN      = -1 # some other mystery problem
+    #UNKNOWN      = -1 # some other mystery problem
     UNKNOWN      = MINUSONE # other representation of -1
 
 #TODO is this var using anywhere??
