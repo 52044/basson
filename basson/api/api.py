@@ -665,8 +665,8 @@ class BASS:
     def StreamCreateURL(self, url:PTR, offset:QWORD, flags:DWORD, proc:DownloadProcType|None, user:PTR|None) -> HSTREAM:
         '''Creates a sample stream from an MP3, MP2, MP1, OGG, WAV, AIFF or plugin supported file on the internet, optionally receiving the downloaded data in a callback function.\n
         https://www.un4seen.com/doc/#bass/BASS_StreamCreateURL.html'''
-        c_proc = DOWNLOADPROC(proc) if proc != None else None
-        result = self.dll.BASS_StreamCreateURL(url, offset, flags, c_proc, user)
+        #c_proc = DOWNLOADPROC(proc) if proc != None else None
+        result = self.dll.BASS_StreamCreateURL(url, offset, flags, proc, user)
         if self.safe and result == 0: self._raise_error('BASS_StreamCreateURL')
         return result
     
@@ -826,9 +826,10 @@ class BASS:
     def ChannelGetAttribute(self, handle:HANDLE, attrib:DWORD, value:FLOAT) -> BOOL:
         '''Retrieves the value of a channel's attribute.\n
         https://www.un4seen.com/doc/#bass/BASS_ChannelGetAttribute.html'''
-        result = self.dll.BASS_ChannelGetAttribute(handle, attrib, ctypes.byref(value))
+        c_value = FLOAT() #FIXME нужно возращать значение в value, и возращать результат выполнения
+        result = self.dll.BASS_ChannelGetAttribute(handle, attrib, ctypes.byref(c_value))
         if self.safe and result == 0: self._raise_error('BASS_ChannelGetAttribute')
-        return result
+        return c_value.value
 
     def ChannelGetAttributeEx(self, handle:HANDLE, attrib:DWORD, value:PTR|None, size:DWORD) -> DWORD:
         '''Retrieves the value of a channel's attribute.\n
@@ -1093,6 +1094,50 @@ class BASS:
 
 #region BassError exception
 class BassError(Exception):
+    OK           = 0 # all is OK
+    MEM          = 1 # memory error
+    FILEOPEN     = 2 # can't open the file
+    DRIVER       = 3 # can't find a free/valid driver
+    BUFLOST      = 4 # the sample buffer was lost
+    HANDLE       = 5 # invalid handle
+    FORMAT       = 6 # unsupported sample format
+    POSITION     = 7 # invalid position
+    INIT         = 8 # BASS_Init has not been successfully called
+    START        = 9 # BASS_Start has not been successfully called
+    SSL          = 10 # SSL/HTTPS support isn't available
+    REINIT       = 11 # device needs to be reinitialized
+    ALREADY      = 14 # already initialized/paused/whatever
+    NOTAUDIO     = 17 # file does not contain audio
+    NOCHAN       = 18 # can't get a free channel
+    ILLTYPE      = 19 # an illegal type was specified
+    ILLPARAM     = 20 # an illegal parameter was specified
+    NO3D         = 21 # no 3D support
+    NOEAX        = 22 # no EAX support
+    DEVICE       = 23 # illegal device number
+    NOPLAY       = 24 # not playing
+    FREQ         = 25 # illegal sample rate
+    NOTFILE      = 27 # the stream is not a file stream
+    NOHW         = 29 # no hardware voices available
+    EMPTY        = 31 # the file has no sample data
+    NONET        = 32 # no internet connection could be opened
+    CREATE       = 33 # couldn't create the file
+    NOFX         = 34 # effects are not available
+    NOTAVAIL     = 37 # requested data/action is not available
+    DECODE       = 38 # the channel is/isn't a "decoding channel"
+    DX           = 39 # a sufficient DirectX version is not installed
+    TIMEOUT      = 40 # connection timedout
+    FILEFORM     = 41 # unsupported file format
+    SPEAKER      = 42 # unavailable speaker
+    VERSION      = 43 # invalid BASS version (used by add-ons)
+    CODEC        = 44 # codec is not available/supported
+    ENDED        = 45 # the channel/file has ended
+    BUSY         = 46 # the device is busy
+    UNSTREAMABLE = 47 # unstreamable file
+    PROTOCOL     = 48 # unsupported protocol
+    DENIED       = 49 # access denied
+    #UNKNOWN      = -1 # some other mystery problem
+    UNKNOWN      = MINUSONE # other representation of -1
+
     """Custom exception for errors in BASS."""
     def __init__(self, code, function="<none>"):
         self.code = code

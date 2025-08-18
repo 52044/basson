@@ -4,51 +4,6 @@ from enum import IntFlag, IntEnum
 from .types import MINUSONE
 
 #region OG header
-# Error codes returned by BASS_ErrorGetCode
-class BassErrorsOptions(IntEnum):
-    OK           = 0 # all is OK
-    MEM          = 1 # memory error
-    FILEOPEN     = 2 # can't open the file
-    DRIVER       = 3 # can't find a free/valid driver
-    BUFLOST      = 4 # the sample buffer was lost
-    HANDLE       = 5 # invalid handle
-    FORMAT       = 6 # unsupported sample format
-    POSITION     = 7 # invalid position
-    INIT         = 8 # BASS_Init has not been successfully called
-    START        = 9 # BASS_Start has not been successfully called
-    SSL          = 10 # SSL/HTTPS support isn't available
-    REINIT       = 11 # device needs to be reinitialized
-    ALREADY      = 14 # already initialized/paused/whatever
-    NOTAUDIO     = 17 # file does not contain audio
-    NOCHAN       = 18 # can't get a free channel
-    ILLTYPE      = 19 # an illegal type was specified
-    ILLPARAM     = 20 # an illegal parameter was specified
-    NO3D         = 21 # no 3D support
-    NOEAX        = 22 # no EAX support
-    DEVICE       = 23 # illegal device number
-    NOPLAY       = 24 # not playing
-    FREQ         = 25 # illegal sample rate
-    NOTFILE      = 27 # the stream is not a file stream
-    NOHW         = 29 # no hardware voices available
-    EMPTY        = 31 # the file has no sample data
-    NONET        = 32 # no internet connection could be opened
-    CREATE       = 33 # couldn't create the file
-    NOFX         = 34 # effects are not available
-    NOTAVAIL     = 37 # requested data/action is not available
-    DECODE       = 38 # the channel is/isn't a "decoding channel"
-    DX           = 39 # a sufficient DirectX version is not installed
-    TIMEOUT      = 40 # connection timedout
-    FILEFORM     = 41 # unsupported file format
-    SPEAKER      = 42 # unavailable speaker
-    VERSION      = 43 # invalid BASS version (used by add-ons)
-    CODEC        = 44 # codec is not available/supported
-    ENDED        = 45 # the channel/file has ended
-    BUSY         = 46 # the device is busy
-    UNSTREAMABLE = 47 # unstreamable file
-    PROTOCOL     = 48 # unsupported protocol
-    DENIED       = 49 # access denied
-    #UNKNOWN      = -1 # some other mystery problem
-    UNKNOWN      = MINUSONE # other representation of -1
 
 #TODO is this var using anywhere??
 BASS_CONFIG_THREAD          = 0x40000000 # flag: thread-specific setting
@@ -145,37 +100,39 @@ WAVE_FORMAT_4M16            = 0x00000400 # 44.1   kHz, Mono,   16-bit
 WAVE_FORMAT_4S16            = 0x00000800 # 44.1   kHz, Stereo, 16-bit
 
 # BASS_SAMPLE flags
-BASS_SAMPLE_8BITS           = 1 # 8 bit
-BASS_SAMPLE_FLOAT           = 256 # 32 bit floating-point
-BASS_SAMPLE_MONO            = 2 # mono
-BASS_SAMPLE_LOOP            = 4 # looped
-BASS_SAMPLE_3D              = 8 # 3D functionality
-BASS_SAMPLE_SOFTWARE        = 16 # unused
-BASS_SAMPLE_MUTEMAX         = 32 # mute at max distance (3D only)
-BASS_SAMPLE_VAM             = 64 # unused
-BASS_SAMPLE_FX              = 128 # unused
-BASS_SAMPLE_OVER_VOL        = 0x10000 # override lowest volume
-BASS_SAMPLE_OVER_POS        = 0x20000 # override longest playing
-BASS_SAMPLE_OVER_DIST       = 0x30000 # override furthest from listener (3D only)
+class BassSampleFlags(IntFlag):
+    BITS8           = 1 # 8 bit
+    FLOAT           = 256 # 32 bit floating-point
+    MONO            = 2 # mono
+    LOOP            = 4 # looped
+    D3              = 8 # 3D functionality
+    SOFTWARE        = 16 # unused
+    MUTEMAX         = 32 # mute at max distance (3D only)
+    VAM             = 64 # unused
+    FX              = 128 # unused
+    OVER_VOL        = 0x10000 # override lowest volume
+    OVER_POS        = 0x20000 # override longest playing
+    OVER_DIST       = 0x30000 # override furthest from listener (3D only)
 
-BASS_STREAM_PRESCAN         = 0x20000 # scan file for accurate seeking and length
-BASS_STREAM_AUTOFREE        = 0x40000 # automatically free the stream when it stops/ends
-BASS_STREAM_RESTRATE        = 0x80000 # restrict the download rate of internet file stream
-BASS_STREAM_BLOCK           = 0x100000 # download internet file stream in small blocks
-BASS_STREAM_DECODE          = 0x200000 # don't play the stream, only decode
-BASS_STREAM_STATUS          = 0x800000 # give server status info (HTTP/ICY tags) in DOWNLOADPROC
+class BassStreamFlags(IntFlag):
+    PRESCAN         = 0x20000 # scan file for accurate seeking and length
+    AUTOFREE        = 0x40000 # automatically free the stream when it stops/ends
+    RESTRATE        = 0x80000 # restrict the download rate of internet file stream
+    BLOCK           = 0x100000 # download internet file stream in small blocks
+    DECODE          = 0x200000 # don't play the stream, only decode
+    STATUS          = 0x800000 # give server status info (HTTP/ICY tags) in DOWNLOADPROC
 
 BASS_MP3_IGNOREDELAY        = 0x200 # ignore LAME/Xing/VBRI/iTunes delay & padding info
-BASS_MP3_SETPOS             = BASS_STREAM_PRESCAN
+BASS_MP3_SETPOS             = BassStreamFlags.PRESCAN
 
-BASS_MUSIC_FLOAT            = BASS_SAMPLE_FLOAT
-BASS_MUSIC_MONO             = BASS_SAMPLE_MONO
-BASS_MUSIC_LOOP             = BASS_SAMPLE_LOOP
-BASS_MUSIC_3D               = BASS_SAMPLE_3D
-BASS_MUSIC_FX               = BASS_SAMPLE_FX
-BASS_MUSIC_AUTOFREE         = BASS_STREAM_AUTOFREE
-BASS_MUSIC_DECODE           = BASS_STREAM_DECODE
-BASS_MUSIC_PRESCAN          = BASS_STREAM_PRESCAN # calculate playback length
+BASS_MUSIC_FLOAT            = BassSampleFlags.FLOAT
+BASS_MUSIC_MONO             = BassSampleFlags.MONO
+BASS_MUSIC_LOOP             = BassSampleFlags.LOOP
+BASS_MUSIC_3D               = BassSampleFlags.D3
+BASS_MUSIC_FX               = BassSampleFlags.FX
+BASS_MUSIC_AUTOFREE         = BassStreamFlags.AUTOFREE
+BASS_MUSIC_DECODE           = BassStreamFlags.DECODE
+BASS_MUSIC_PRESCAN          = BassStreamFlags.PRESCAN # calculate playback length
 BASS_MUSIC_CALCLEN          = BASS_MUSIC_PRESCAN
 BASS_MUSIC_RAMP             = 0x200 # normal ramping
 BASS_MUSIC_RAMPS            = 0x400 # sensitive ramping
@@ -192,27 +149,28 @@ BASS_MUSIC_STOPBACK         = 0x80000 # stop the music on a backwards jump effec
 BASS_MUSIC_NOSAMPLE         = 0x100000 # don't load the samples
 
 # Speaker assignment flags
-BASS_SPEAKER_FRONT          = 0x1000000 # front speakers
-BASS_SPEAKER_REAR           = 0x2000000 # rear speakers
-BASS_SPEAKER_CENLFE         = 0x3000000 # center & LFE speakers (5.1)
-BASS_SPEAKER_SIDE           = 0x4000000 # side speakers (7.1)
+class BassSpeakerFlags(IntFlag):
+    FRONT          = 0x1000000 # front speakers
+    REAR           = 0x2000000 # rear speakers
+    CENLFE         = 0x3000000 # center & LFE speakers (5.1)
+    SIDE           = 0x4000000 # side speakers (7.1)
+    LEFT           = 0x10000000 # modifier: left
+    RIGHT          = 0x20000000 # modifier: right
 
-BASS_SPEAKER_LEFT           = 0x10000000 # modifier: left
-BASS_SPEAKER_RIGHT          = 0x20000000 # modifier: right
-BASS_SPEAKER_FRONTLEFT      = BASS_SPEAKER_FRONT | BASS_SPEAKER_LEFT
-BASS_SPEAKER_FRONTRIGHT     = BASS_SPEAKER_FRONT | BASS_SPEAKER_RIGHT
-BASS_SPEAKER_REARLEFT       = BASS_SPEAKER_REAR | BASS_SPEAKER_LEFT
-BASS_SPEAKER_REARRIGHT      = BASS_SPEAKER_REAR | BASS_SPEAKER_RIGHT
-BASS_SPEAKER_CENTER         = BASS_SPEAKER_CENLFE | BASS_SPEAKER_LEFT
-BASS_SPEAKER_LFE            = BASS_SPEAKER_CENLFE | BASS_SPEAKER_RIGHT
-BASS_SPEAKER_SIDELEFT       = BASS_SPEAKER_SIDE | BASS_SPEAKER_LEFT
-BASS_SPEAKER_SIDERIGHT      = BASS_SPEAKER_SIDE | BASS_SPEAKER_RIGHT
-BASS_SPEAKER_REAR2          = BASS_SPEAKER_SIDE
-BASS_SPEAKER_REAR2LEFT      = BASS_SPEAKER_SIDELEFT
-BASS_SPEAKER_REAR2RIGHT     = BASS_SPEAKER_SIDERIGHT
+    FRONTLEFT      = FRONT  | LEFT
+    FRONTRIGHT     = FRONT  | RIGHT
+    REARLEFT       = REAR   | LEFT
+    REARRIGHT      = REAR   | RIGHT
+    CENTER         = CENLFE | LEFT
+    LFE            = CENLFE | RIGHT
+    SIDELEFT       = SIDE   | LEFT
+    SIDERIGHT      = SIDE   | RIGHT
+    REAR2          = SIDE
+    REAR2LEFT      = SIDELEFT
+    REAR2RIGHT     = SIDERIGHT
 
-BASS_ASYNCFILE              = 0x40000000 # read file asynchronously
-BASS_UNICODE                = 0x80000000 # UTF-16
+ASYNCFILE              = 0x40000000 # read file asynchronously
+UNICODE                = 0x80000000 # UTF-16
 
 BASS_RECORD_ECHOCANCEL      = 0x2000
 BASS_RECORD_AGC             = 0x4000
@@ -261,8 +219,6 @@ BASS_PLUGIN_PROC            = 1
 BASS_3DMODE_NORMAL          = 0 # normal 3D processing
 BASS_3DMODE_RELATIVE        = 1 # position is relative to the listener
 BASS_3DMODE_OFF             = 2 # no 3D processing
-
-
 
 # BASS_SampleGetChannel flags
 BASS_SAMCHAN_NEW            = 1 # get a new playback channel
@@ -325,35 +281,36 @@ BASS_ACTIVE_PAUSED          = 3
 BASS_ACTIVE_PAUSED_DEVICE   = 4
 
 # Channel attributes
-BASS_ATTRIB_FREQ            = 1
-BASS_ATTRIB_VOL             = 2
-BASS_ATTRIB_PAN             = 3
-BASS_ATTRIB_EAXMIX          = 4
-BASS_ATTRIB_NOBUFFER        = 5
-BASS_ATTRIB_VBR             = 6 # unused
-BASS_ATTRIB_CPU             = 7
-BASS_ATTRIB_SRC             = 8
-BASS_ATTRIB_NET_RESUME      = 9
-BASS_ATTRIB_SCANINFO        = 10
-BASS_ATTRIB_NORAMP          = 11
-BASS_ATTRIB_BITRATE         = 12
-BASS_ATTRIB_BUFFER          = 13
-BASS_ATTRIB_GRANULE         = 14
-BASS_ATTRIB_USER            = 15       # from BASS 2.4.16
-BASS_ATTRIB_TAIL            = 16       # from BASS 2.4.16
-BASS_ATTRIB_PUSH_LIMIT      = 17 # from BASS 2.4.16
-BASS_ATTRIB_DOWNLOADPROC    = 18 # from BASS 2.4.17
-BASS_ATTRIB_VOLDSP          = 19     # from BASS 2.4.17
-BASS_ATTRIB_VOLDSP_PRIORITY = 20 # from BASS 2.4.17
-BASS_ATTRIB_MUSIC_AMPLIFY   = 0x100
-BASS_ATTRIB_MUSIC_PANSEP    = 0x101
-BASS_ATTRIB_MUSIC_PSCALER   = 0x102
-BASS_ATTRIB_MUSIC_BPM       = 0x103
-BASS_ATTRIB_MUSIC_SPEED     = 0x104
-BASS_ATTRIB_MUSIC_VOL_GLOBAL = 0x105
-BASS_ATTRIB_MUSIC_ACTIVE    = 0x106
-BASS_ATTRIB_MUSIC_VOL_CHAN  = 0x200 # + channel #
-BASS_ATTRIB_MUSIC_VOL_INST  = 0x300 # + instrument #
+class BassChannelOptions(IntEnum):
+    FREQ            = 1
+    VOL             = 2
+    PAN             = 3
+    EAXMIX          = 4
+    NOBUFFER        = 5
+    VBR             = 6 # unused
+    CPU             = 7
+    SRC             = 8
+    NET_RESUME      = 9
+    SCANINFO        = 10
+    NORAMP          = 11
+    BITRATE         = 12
+    BUFFER          = 13
+    GRANULE         = 14
+    USER            = 15       # from BASS 2.4.16
+    TAIL            = 16       # from BASS 2.4.16
+    PUSH_LIMIT      = 17 # from BASS 2.4.16
+    DOWNLOADPROC    = 18 # from BASS 2.4.17
+    VOLDSP          = 19     # from BASS 2.4.17
+    VOLDSP_PRIORITY = 20 # from BASS 2.4.17
+    MUSIC_AMPLIFY   = 0x100
+    MUSIC_PANSEP    = 0x101
+    MUSIC_PSCALER   = 0x102
+    MUSIC_BPM       = 0x103
+    MUSIC_SPEED     = 0x104
+    MUSIC_VOL_GLOBAL = 0x105
+    MUSIC_ACTIVE    = 0x106
+    MUSIC_VOL_CHAN  = 0x200 # + channel #
+    MUSIC_VOL_INST  = 0x300 # + instrument #
 
 # BASS_ChannelSlideAttribute flags
 BASS_SLIDE_LOG              = 0x1000000
@@ -419,18 +376,19 @@ BASS_TAG_MUSIC_CHAN = 0x10200 # + channel #, MOD channel name : ANSI string
 BASS_TAG_MUSIC_SAMPLE = 0x10300 # + sample #, MOD sample name : ANSI string
 
 # BASS_ChannelGetLength/GetPosition/SetPosition modes
-BASS_POS_BYTE = 0 # byte position
-BASS_POS_MUSIC_ORDER = 1 # order.row position, MAKELONG(order,row)
-BASS_POS_OGG = 3 # OGG bitstream number
-BASS_POS_END = 0x10 # trimmed end position
-BASS_POS_LOOP = 0x11 # loop start positiom
-BASS_POS_FLUSH = 0x1000000 # flag: flush decoder/FX buffers
-BASS_POS_RESET = 0x2000000 # flag: reset user file buffers
-BASS_POS_RELATIVE = 0x4000000 # flag: seek relative to the current position
-BASS_POS_INEXACT = 0x8000000 # flag: allow seeking to inexact position
-BASS_POS_DECODE = 0x10000000 # flag: get the decoding (not playing) position
-BASS_POS_DECODETO = 0x20000000 # flag: decode to the position instead of seeking
-BASS_POS_SCAN = 0x40000000 # flag: scan to the position
+class BassPosOptions(IntEnum):
+    BYTE = 0 # byte position
+    MUSIC_ORDER = 1 # order.row position, MAKELONG(order,row)
+    OGG = 3 # OGG bitstream number
+    END = 0x10 # trimmed end position
+    LOOP = 0x11 # loop start positiom
+    FLUSH = 0x1000000 # flag: flush decoder/FX buffers
+    RESET = 0x2000000 # flag: reset user file buffers
+    RELATIVE = 0x4000000 # flag: seek relative to the current position
+    INEXACT = 0x8000000 # flag: allow seeking to inexact position
+    DECODE = 0x10000000 # flag: get the decoding (not playing) position
+    DECODETO = 0x20000000 # flag: decode to the position instead of seeking
+    SCAN = 0x40000000 # flag: scan to the position
 
 # BASS_ChannelSetDevice/GetDevice option
 BASS_NODEVICE = 0x20000
@@ -520,3 +478,8 @@ class BassDXVersionOptions(IntEnum):
 # BASS_RECORDINFO flags (from DSOUND.H)
 DSCCAPS_EMULDRIVER          = 0x00000020 # device does not have hardware DirectSound recording support
 DSCCAPS_CERTIFIED           = 0x00000040 # device driver has been certified by Microsoft
+
+# BASS_CommonFlags flags. It have common (uncategorised) flags and constants
+class BassCommonFlags(IntFlag):
+    ASYNCFILE = ASYNCFILE
+    UNICODE = UNICODE

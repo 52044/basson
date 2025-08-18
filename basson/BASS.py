@@ -4,7 +4,6 @@ from .api import structures as cstrct
 from . import structures as pstrct
 from . import utils
 
-# region BASS
 class BASS():
     def __init__(self, dll_path:str|None=None):
         ''' Python-frendly wrapper over BASS library
@@ -108,6 +107,4 @@ class BASS():
             'minbuf': info.minbuf,
             'speakers': info.speakers
         }
-    
     #TODO bass plugins
-#endregion
