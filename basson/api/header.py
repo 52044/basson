@@ -9,7 +9,7 @@ from .types import MINUSONE
 BASS_CONFIG_THREAD          = 0x40000000 # flag: thread-specific setting
 
 # BASS_CONFIG_IOS_SESSION flags
-class BassIOSSessionFlags(IntFlag):
+class IOSSessionFlags(IntFlag):
     ''' Flags, using in `BassConfig.ios_seesion`'''
     MIX        = 1
     '''Allow other apps to be heard at the same time.'''
@@ -31,7 +31,7 @@ class BassIOSSessionFlags(IntFlag):
     '''Allow Bluetooth A2DP devices when recording (Bluetooth is always allowed when only playing).'''
 
 # BASS_Init flags
-class BassDeviceFlags(IntFlag):
+class DeviceFlags(IntFlag):
     BITS8           = 1 # unused
     MONO            = 2 # mono
     DIMENSIONAL     = 4 # unused
@@ -50,7 +50,7 @@ class BassDeviceFlags(IntFlag):
     SOFTWARE        = 0x80000 # disable hardware/fastpath output
 
 # software 3D mixing algorithms (used with BASS_CONFIG_3DALGORITHM)
-class Bass3DAlorithmsOptions(IntEnum):
+class D3AlorithmsOptions(IntEnum):
     DEFAULT          = 0
     '''If at least 4 speakers are available then the sound is panned among them'''
     OFF              = 1
@@ -100,7 +100,7 @@ WAVE_FORMAT_4M16            = 0x00000400 # 44.1   kHz, Mono,   16-bit
 WAVE_FORMAT_4S16            = 0x00000800 # 44.1   kHz, Stereo, 16-bit
 
 # BASS_SAMPLE flags
-class BassSampleFlags(IntFlag):
+class SampleFlags(IntFlag):
     BITS8           = 1 # 8 bit
     FLOAT           = 256 # 32 bit floating-point
     MONO            = 2 # mono
@@ -114,7 +114,7 @@ class BassSampleFlags(IntFlag):
     OVER_POS        = 0x20000 # override longest playing
     OVER_DIST       = 0x30000 # override furthest from listener (3D only)
 
-class BassStreamFlags(IntFlag):
+class StreamFlags(IntFlag):
     PRESCAN         = 0x20000 # scan file for accurate seeking and length
     AUTOFREE        = 0x40000 # automatically free the stream when it stops/ends
     RESTRATE        = 0x80000 # restrict the download rate of internet file stream
@@ -123,33 +123,34 @@ class BassStreamFlags(IntFlag):
     STATUS          = 0x800000 # give server status info (HTTP/ICY tags) in DOWNLOADPROC
 
 BASS_MP3_IGNOREDELAY        = 0x200 # ignore LAME/Xing/VBRI/iTunes delay & padding info
-BASS_MP3_SETPOS             = BassStreamFlags.PRESCAN
+BASS_MP3_SETPOS             = StreamFlags.PRESCAN
 
-BASS_MUSIC_FLOAT            = BassSampleFlags.FLOAT
-BASS_MUSIC_MONO             = BassSampleFlags.MONO
-BASS_MUSIC_LOOP             = BassSampleFlags.LOOP
-BASS_MUSIC_3D               = BassSampleFlags.D3
-BASS_MUSIC_FX               = BassSampleFlags.FX
-BASS_MUSIC_AUTOFREE         = BassStreamFlags.AUTOFREE
-BASS_MUSIC_DECODE           = BassStreamFlags.DECODE
-BASS_MUSIC_PRESCAN          = BassStreamFlags.PRESCAN # calculate playback length
-BASS_MUSIC_CALCLEN          = BASS_MUSIC_PRESCAN
-BASS_MUSIC_RAMP             = 0x200 # normal ramping
-BASS_MUSIC_RAMPS            = 0x400 # sensitive ramping
-BASS_MUSIC_SURROUND         = 0x800 # surround sound
-BASS_MUSIC_SURROUND2        = 0x1000 # surround sound (mode 2)
-BASS_MUSIC_FT2PAN           = 0x2000 # apply FastTracker 2 panning to XM files
-BASS_MUSIC_FT2MOD           = 0x2000 # play .MOD as FastTracker 2 does
-BASS_MUSIC_PT1MOD           = 0x4000 # play .MOD as ProTracker 1 does
-BASS_MUSIC_NONINTER         = 0x10000 # non-interpolated sample mixing
-BASS_MUSIC_SINCINTER        = 0x800000 # sinc interpolated sample mixing
-BASS_MUSIC_POSRESET         = 0x8000 # stop all notes when moving position
-BASS_MUSIC_POSRESETEX       = 0x400000 # stop all notes and reset bmp/etc when moving position
-BASS_MUSIC_STOPBACK         = 0x80000 # stop the music on a backwards jump effect
-BASS_MUSIC_NOSAMPLE         = 0x100000 # don't load the samples
+class MusicFlags(IntFlag):
+    FLOAT            = SampleFlags.FLOAT
+    MONO             = SampleFlags.MONO
+    LOOP             = SampleFlags.LOOP
+    D3               = SampleFlags.D3
+    FX               = SampleFlags.FX
+    AUTOFREE         = StreamFlags.AUTOFREE
+    DECODE           = StreamFlags.DECODE
+    PRESCAN          = StreamFlags.PRESCAN # calculate playback length
+    CALCLEN          = PRESCAN
+    RAMP             = 0x200 # normal ramping
+    RAMPS            = 0x400 # sensitive ramping
+    SURROUND         = 0x800 # surround sound
+    SURROUND2        = 0x1000 # surround sound (mode 2)
+    FT2PAN           = 0x2000 # apply FastTracker 2 panning to XM files
+    FT2MOD           = 0x2000 # play .MOD as FastTracker 2 does
+    PT1MOD           = 0x4000 # play .MOD as ProTracker 1 does
+    NONINTER         = 0x10000 # non-interpolated sample mixing
+    SINCINTER        = 0x800000 # sinc interpolated sample mixing
+    POSRESET         = 0x8000 # stop all notes when moving position
+    POSRESETEX       = 0x400000 # stop all notes and reset bmp/etc when moving position
+    STOPBACK         = 0x80000 # stop the music on a backwards jump effect
+    NOSAMPLE         = 0x100000 # don't load the samples
 
 # Speaker assignment flags
-class BassSpeakerFlags(IntFlag):
+class SpeakerFlags(IntFlag):
     FRONT          = 0x1000000 # front speakers
     REAR           = 0x2000000 # rear speakers
     CENLFE         = 0x3000000 # center & LFE speakers (5.1)
@@ -274,14 +275,15 @@ BASS_SYNC_MIXTIME           = 0x40000000 # flag: sync at mixtime, else at playti
 BASS_SYNC_ONETIME           = 0x80000000 # flag: sync only once, else continuously
 
 # BASS_ChannelIsActive return values
-BASS_ACTIVE_STOPPED         = 0
-BASS_ACTIVE_PLAYING         = 1
-BASS_ACTIVE_STALLED         = 2
-BASS_ACTIVE_PAUSED          = 3
-BASS_ACTIVE_PAUSED_DEVICE   = 4
+class ChannelStatus(IntEnum):
+    STOPPED         = 0
+    PLAYING         = 1
+    STALLED         = 2
+    PAUSED          = 3
+    PAUSED_DEVICE   = 4
 
 # Channel attributes
-class BassChannelOptions(IntEnum):
+class ChannelOptions(IntEnum):
     FREQ            = 1
     VOL             = 2
     PAN             = 3
@@ -316,23 +318,25 @@ class BassChannelOptions(IntEnum):
 BASS_SLIDE_LOG              = 0x1000000
 
 # BASS_ChannelGetData flags
-BASS_DATA_AVAILABLE         = 0 # query how much data is buffered
-BASS_DATA_NOREMOVE          = 0x10000000 # flag: don't remove data from recording buffer
-BASS_DATA_FIXED             = 0x20000000 # unused
-BASS_DATA_FLOAT             = 0x40000000 # flag: return floating-point sample data
-BASS_DATA_FFT256            = 0x80000000 # 256 sample FFT
-BASS_DATA_FFT512            = 0x80000001 # 512 FFT
-BASS_DATA_FFT1024           = 0x80000002 # 1024 FFT
-BASS_DATA_FFT2048           = 0x80000003 # 2048 FFT
-BASS_DATA_FFT4096           = 0x80000004 # 4096 FFT
-BASS_DATA_FFT8192           = 0x80000005 # 8192 FFT
-BASS_DATA_FFT16384          = 0x80000006 # 16384 FFT
-BASS_DATA_FFT32768          = 0x80000007 # 32768 FFT
-BASS_DATA_FFT_INDIVIDUAL    = 0x10 # FFT flag: FFT for each channel, else all combined
-BASS_DATA_FFT_NOWINDOW      = 0x20 # FFT flag: no Hanning window
-BASS_DATA_FFT_REMOVEDC      = 0x40 # FFT flag: pre-remove DC bias
-BASS_DATA_FFT_COMPLEX       = 0x80 # FFT flag: return complex data
-BASS_DATA_FFT_NYQUIST       = 0x100 # FFT flag: return extra Nyquist value
+class DataLengthOptions(IntEnum):
+    FFT256            = 0x80000000 # 256 sample FFT
+    FFT512            = 0x80000001 # 512 FFT
+    FFT1024           = 0x80000002 # 1024 FFT
+    FFT2048           = 0x80000003 # 2048 FFT
+    FFT4096           = 0x80000004 # 4096 FFT
+    FFT8192           = 0x80000005 # 8192 FFT
+    FFT16384          = 0x80000006 # 16384 FFT
+    FFT32768          = 0x80000007 # 32768 FFT
+class DataFlags(IntFlag):
+    AVAILABLE         = 0 # query how much data is buffered
+    NOREMOVE          = 0x10000000 # flag: don't remove data from recording buffer
+    FIXED             = 0x20000000 # unused
+    FLOAT             = 0x40000000 # flag: return floating-point sample data
+    FFT_INDIVIDUAL    = 0x10 # FFT flag: FFT for each channel, else all combined
+    FFT_NOWINDOW      = 0x20 # FFT flag: no Hanning window
+    FFT_REMOVEDC      = 0x40 # FFT flag: pre-remove DC bias
+    FFT_COMPLEX       = 0x80 # FFT flag: return complex data
+    FFT_NYQUIST       = 0x100 # FFT flag: return extra Nyquist value
 
 # BASS_ChannelGetLevelEx flags
 BASS_LEVEL_MONO = 1 # get mono level
@@ -376,7 +380,7 @@ BASS_TAG_MUSIC_CHAN = 0x10200 # + channel #, MOD channel name : ANSI string
 BASS_TAG_MUSIC_SAMPLE = 0x10300 # + sample #, MOD sample name : ANSI string
 
 # BASS_ChannelGetLength/GetPosition/SetPosition modes
-class BassPosOptions(IntEnum):
+class PosOptions(IntEnum):
     BYTE = 0 # byte position
     MUSIC_ORDER = 1 # order.row position, MAKELONG(order,row)
     OGG = 3 # OGG bitstream number
@@ -436,20 +440,20 @@ BASS_IOSNOTIFY_INTERRUPT_END = 2 # interruption ended
 
 #region Custom headers
 # BASS_CONFIG_NET_PLAYLIST
-class BassNetPlaylistOptions(IntEnum):
+class NetPlaylistOptions(IntEnum):
     NEVER = 0
     ONLYSTREAMCREATEURL = 1
     STREAMCREATEFILE = 2
 
 # BASS_CONFIG_NORAMP
-class BassNorampOptions(IntEnum):
+class NorampOptions(IntEnum):
     ENABLE = 0
     DISABLE = 1
     RAMPINGINOFF = 2
     RAMPINGOUTOFF = 3
 
 # BASS_CONFIG_SCR
-class BassSamplerateConversionOptions(IntEnum):
+class SamplerateConversionOptions(IntEnum):
     LINEAR = 0
     POINT8SINC = 1
     POINT16SINC = 2
@@ -457,18 +461,19 @@ class BassSamplerateConversionOptions(IntEnum):
     POINT64SINC = 4
 
 # Bass.IsStarted
-class BassStatusOptions(IntEnum):
+class StatusOptions(IntEnum):
     NOTSTARTED = 0
     ACTIVE = 1
     INACTIVE = 2
+    INTERRUPTED = 3 # iOS specific
 
 # BASS.GetInfo.flags
-class BassInfoFlags(IntFlag):
+class InfoFlags(IntFlag):
     EMULDRIVER = 0x00000020
     CERTIFIED = 0x00000040
     HARDWARE = 0x80000000
 
-class BassDXVersionOptions(IntEnum):
+class DXVersionOptions(IntEnum):
     DX9 = 9
     DX8 = 8
     DX7 = 7
@@ -480,6 +485,14 @@ DSCCAPS_EMULDRIVER          = 0x00000020 # device does not have hardware DirectS
 DSCCAPS_CERTIFIED           = 0x00000040 # device driver has been certified by Microsoft
 
 # BASS_CommonFlags flags. It have common (uncategorised) flags and constants
-class BassCommonFlags(IntFlag):
+class CommonFlags(IntFlag):
     ASYNCFILE = ASYNCFILE
     UNICODE = UNICODE
+
+# Channel.WHOAMI
+class ChannelType(IntEnum):
+    SAMPLE =    0
+    STREAM =    1
+    MUSIC =     2
+    RECORD =    3
+

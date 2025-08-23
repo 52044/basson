@@ -2,7 +2,7 @@
 name = "basson"
 version = "0.1dev"
 authors = [
-   { name="52044", email="lev.portnyagin@vk.com" },]
+   { name="Leo 52044", email="lev.portnyagin@vk.com" },]
 description = "Easy-to-use wrapper for BASS audio library"
 readme = "README.md"
 requires-python = ">=3.10.0"

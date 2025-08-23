@@ -1,35 +1,37 @@
 # Core object
-from .bass import BASS
+from .BASS import BASS
 from .stream import StreamFile, StreamURL
 
 # Exception class
-from .api.api import BassError
+from .api.api import BassException
 
 # Additional utilities
 from . import utils
 
 # IntFlags & IntEnums
 from .api.header import (
-    #1                      #2                      #3                      #4
-    BassIOSSessionFlags,    BassDeviceFlags,        Bass3DAlorithmsOptions, BassSampleFlags,        
-    BassStreamFlags,        BassPosOptions,         BassChannelOptions,
+    #1                  #2                  #3                  #4
+    IOSSessionFlags,    DeviceFlags,        D3AlorithmsOptions, SampleFlags,        
+    StreamFlags,        PosOptions,         ChannelOptions,     DataFlags, 
+    DataLengthOptions,  
     )
 
 # Custom flags & emums
 from .api.header import (
-    #1                      #2                      #3                      #4
-    BassNetPlaylistOptions, BassNorampOptions,      BassSamplerateConversionOptions, BassStatusOptions,
-    BassInfoFlags,          BassDXVersionOptions,   BassCommonFlags,
+    #1                  #2                  #3                  #4
+    NetPlaylistOptions, NorampOptions,      SamplerateConversionOptions, StatusOptions,
+    InfoFlags,          DXVersionOptions,   CommonFlags,        ChannelType,
     )
 
-__all__ = ["BASS", 
+__all__ = ["BASS", "BassException",
            "StreamFile", "StreamURL",
-           "BassError",
            "utils",
            
-           "BassIOSSessionFlags", "BassDeviceFlags", "Bass3DAlorithmsOptions","BassSampleFlags", 
-           "BassStreamFlags", "BassPosOptions", "BassChannelOptions",
+           #1                   #2                  #3                  #4
+           "IOSSessionFlags",   "DeviceFlags",      "D3AlorithmsOptions", "SampleFlags", 
+           "StreamFlags",       "PosOptions",       "ChannelOptions",   "DataFlags", 
+           "DataLengthOptions",
 
-           "BassNetPlaylistOptions", "BassNorampOptions", "BassSamplerateConversionOptions", "BassStatusOptions",
-           "BassInfoFlags", "BassDXVersionOptions", "BassCommonFlags"
+           "NetPlaylistOptions", "NorampOptions",   "SamplerateConversionOptions", "StatusOptions",
+           "InfoFlags",         "DXVersionOptions", "CommonFlags",      "ChannelType",
            ]

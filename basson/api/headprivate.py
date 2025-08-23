@@ -3,7 +3,7 @@
 # BASS_Get/SetConfig(Ptr) options
 from enum import IntEnum
 
-class BassConfigOptions(IntEnum):
+class ConfigOptions(IntEnum):
     BUFFER          = 0
     UPDATEPERIOD    = 1
     GVOL_SAMPLE     = 4

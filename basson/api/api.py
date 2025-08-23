@@ -354,12 +354,12 @@ class BASS:
         self.dll.BASS_FXSetPriority.restype = BOOL
 
     def _raise_error(self, name):
-        ''' Raises a BassError if fucntion returns "failed" value '''
-        raise BassError(self.ErrorGetCode(), name)
+        ''' Raises a BassException if fucntion returns "failed" value '''
+        raise BassException(self.ErrorGetCode(), name)
 
     def __delattr__(self):
         try: self.Free()
-        except BassError as err:
+        except BassException as err:
             if err.code != 8: raise err # BASS_Init never called (err 8), so whatever
 
     #region BASS / Config
@@ -1092,8 +1092,8 @@ class BASS:
     #endregion
 #endregion
 
-#region BassError exception
-class BassError(Exception):
+#region BassException exception
+class BassException(Exception):
     OK           = 0 # all is OK
     MEM          = 1 # memory error
     FILEOPEN     = 2 # can't open the file
