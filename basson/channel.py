@@ -8,7 +8,7 @@ class Channel():
         ''' Current BASS library'''
         self.HANDLE = handle
         ''' Contain handle of current channel. Uses for any interaction with channel '''
-        self.WHOAMI:header.BassChannelType = None
+        self.WHOAMI:header.ChannelType = None
         ''' Tells that a object is '''
 
         raise TypeError("This class cannot be created directly. Use Streams, Music, Samples for creating this object")
@@ -316,11 +316,10 @@ class Channel():
 
     @property
     def volume(self) -> float:
-        ''' Returns volume of channel '''
+        ''' Volume of channel '''
         return self.bass.ChannelGetAttribute(self.HANDLE, header.ChannelOptions.VOL, 0.0)
     @volume.setter
     def volume(self, value:float):
-        ''' Sets volume of channel'''
         self.bass.ChannelSetAttribute(self.HANDLE, header.ChannelOptions.VOL, value)
 
     @property
