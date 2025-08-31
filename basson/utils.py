@@ -2,6 +2,7 @@
 
 import ctypes
 
+
 @staticmethod
 def get_os() -> str:
     """ Returns OS name"""

@@ -1,5 +1,5 @@
 from .api import header
-from .api.api import BassException
+from .api import BASSException
 from . import BASS
 
 class Channel():
@@ -90,8 +90,8 @@ class Channel():
         '''
         try:
             self.bass.ChannelPlay(self.HANDLE, restart)
-        except BassException as e:
-            if e.code == BassException.START:
+        except BASSException as e:
+            if e.code == BASSException.START:
                 self.start()
             else:
                 raise e

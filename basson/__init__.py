@@ -1,9 +1,18 @@
-# Core object
+# Error
+from .api import BASSError
+
+__all__ = [
+
+    # Exceptions
+    "BASSError", 
+    ]
+
+'''# Core object
 from .BASS import BASS
 from .stream import StreamFile, StreamURL
 
 # Exception class
-from .api.api import BassException
+from .api.api import BASSException
 
 # Additional utilities
 from . import utils
@@ -23,7 +32,7 @@ from .api.header import (
     InfoFlags,          DXVersionOptions,   CommonFlags,        ChannelType,
     )
 
-__all__ = ["BASS", "BassException",
+__all__ = ["BASS", "BASSException",
            "StreamFile", "StreamURL",
            "utils",
            
@@ -34,4 +43,4 @@ __all__ = ["BASS", "BassException",
 
            "NetPlaylistOptions", "NorampOptions",   "SamplerateConversionOptions", "StatusOptions",
            "InfoFlags",         "DXVersionOptions", "CommonFlags",      "ChannelType",
-           ]
+           ]'''

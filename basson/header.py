@@ -1,7 +1,380 @@
-# Pubic part of BASS.h header
+# All BASS.h transformed to Python constants and Flags/Enums
 
 from enum import IntFlag, IntEnum
-from .types import MINUSONE
+
+#region Types
+
+# ctypes desctiptions
+
+import ctypes
+import typing
+
+INT =   ctypes.c_int        
+BYTE =  ctypes.c_ubyte
+WORD =  ctypes.c_ushort
+DWORD = ctypes.c_ulong
+QWORD = ctypes.c_uint64
+FLOAT = ctypes.c_float
+DOUBLE = ctypes.c_double
+CHAR =  ctypes.c_char
+PTR = ctypes.c_void_p # Pointer to something
+CHARP = ctypes.c_char_p
+
+BOOL = ctypes.c_int # BASS using integers as bollean
+TRUE = 1 
+'''`True` value in BASS'''
+FALSE = 0 
+'''`False` value in BASS'''
+MINUSONE = 0xFFFFFFFF
+'''`-1` value'''
+
+# Pointers types (handles) BASS
+#   There are different handle names for visual separating the destination. 
+#   A universal handle is also provided. 
+#   Basically it's all the same thing.
+HANDLE =    DWORD
+HMUSIC =    DWORD
+HSAMPLE =   DWORD
+HCHANNEL =  DWORD
+HSTREAM =   DWORD
+HRECORD =   DWORD
+HSYNC =     DWORD
+HDSP =      DWORD
+HFX =       DWORD
+HPLUGIN =   DWORD
+
+# Streams callbacks
+DOWNLOADPROC =  ctypes.CFUNCTYPE(None, PTR, DWORD, PTR)
+DownloadProcType = typing.Callable[[PTR, DWORD, PTR], None]
+FILECLOSEPROC = ctypes.CFUNCTYPE(None, PTR)
+FileCloseProc = typing.Callable[[PTR], None]
+FILELENPROC =   ctypes.CFUNCTYPE(QWORD, PTR)
+FileLenProc = typing.Callable[[PTR], QWORD]
+FILEREADPROC =  ctypes.CFUNCTYPE(DWORD, PTR, DWORD, PTR)
+FileReadProcType = typing.Callable[[PTR, DWORD, PTR], DWORD]
+FILESEEKPROC =  ctypes.CFUNCTYPE(BOOL, QWORD, PTR)
+FileSeekProcType = typing.Callable[[QWORD, PTR], BOOL]
+STREAMPROC =    ctypes.CFUNCTYPE(DWORD, HSTREAM, PTR, PTR)
+StreamProcType = typing.Callable[[HSTREAM, PTR, PTR], DWORD]
+
+# Record callback
+RECORDPROC =    ctypes.CFUNCTYPE(BOOL, HRECORD, PTR, DWORD, PTR)
+RecordProcType = typing.Callable[[HRECORD, PTR, DWORD, PTR], BOOL]
+
+# Channel callbacks
+DSPPROC =       ctypes.CFUNCTYPE(None, HDSP, DWORD, PTR, DWORD, PTR)
+DSPProcType = typing.Callable[[HDSP, DWORD, PTR, DWORD, PTR], None]
+SYNCPROC =      ctypes.CFUNCTYPE(None, HSYNC, DWORD, DWORD, PTR)
+SyncProcType = typing.Callable[[HSYNC, DWORD, DWORD, PTR], None]
+
+IOSNOTIFYPROC = ctypes.CFUNCTYPE(None, DWORD)
+IOSNotifyProcType = typing.Callable[[DWORD], None]
+#endregion
+
+#region structures
+
+# BASS / Config doesn't have any documented structures
+# BASS / Plugins
+class BASS_PLUGINFORM(ctypes.Structure):
+    _fields_ = [
+        ("ctype", DWORD),   # channel type
+        ("name",  CHARP),   # format description (const char * or const wchar_t *)
+        ("exts",  CHARP)    # file extension filter (const char * or const wchar_t *)
+    ]
+class BASS_PLUGININFO(ctypes.Structure):
+    _fields_ = [
+        ("version", DWORD),         # version (same form as BASS_GetVersion)
+        ("formatc", DWORD),         # number of formats
+        ("formats", ctypes.POINTER(BASS_PLUGINFORM)) # const BASS_PLUGINFORM *
+    ]
+
+# BASS / Initialization, info, etc...
+class BASS_DEVICEINFO(ctypes.Structure):
+    _fields_ = [
+        ("name", CHARP),   # const char *name; (wchar_t* в некоторых конфигурациях Windows)
+        ("driver", CHARP), # const char *driver; (wchar_t* в некоторых конфигурациях Windows)
+        ("flags", DWORD)
+    ]
+class BASS_INFO(ctypes.Structure):
+    _fields_ = [
+        ("flags", DWORD),       # device capabilities (DSCAPS_xxx flags)
+        ("hwsize", DWORD),      # unused
+        ("hwfree", DWORD),      # unused
+        ("freesam", DWORD),     # unused
+        ("free3d", DWORD),      # unused
+        ("minrate", DWORD),     # unused
+        ("maxrate", DWORD),     # unused
+        ("eax", BOOL),          # unused
+        ("minbuf", DWORD),      # recommended minimum buffer length in ms
+        ("dsver", DWORD),       # DirectSound version
+        ("latency", DWORD),     # average delay (in ms) before start of playback
+        ("initflags", DWORD),   # BASS_Init "flags" parameter
+        ("speakers", DWORD),    # number of speakers available
+        ("freq", DWORD)         # current output rate
+    ]
+
+# BASS / 3D
+class BASS_3DVECTOR(ctypes.Structure):
+    _fields_ = [
+        ("x", FLOAT), # +=right, -=left
+        ("y", FLOAT), # +=up, -=down
+        ("z", FLOAT)  # +=front, -=behind
+    ]
+
+# BASS / Samples
+class BASS_SAMPLE(ctypes.Structure):
+    _fields_ = [
+        ("freq",    DWORD), # default playback rate
+        ("volume",  FLOAT), # default volume (0-1)
+        ("pan",     FLOAT), # default pan (-1=left, 0=middle, 1=right)
+        ("flags",   DWORD), # BASS_SAMPLE_xxx flags
+        ("length",  DWORD), # length (in bytes)
+        ("max",     DWORD), # maximum simultaneous playbacks
+        ("origres", DWORD), # original resolution
+        ("chans",   DWORD), # number of channels
+        ("mingap",  DWORD), # minimum gap (ms) between creating channels
+        ("mode3d",  DWORD), # BASS_3DMODE_xxx mode
+        ("mindist", FLOAT), # minimum distance
+        ("maxdist", FLOAT), # maximum distance
+        ("iangle",  DWORD), # angle of inside projection cone
+        ("oangle",  DWORD), # angle of outside projection cone
+        ("outvol",  FLOAT), # delta-volume outside the projection cone
+        ("vam",     DWORD), # unused
+        ("priority", DWORD) # unused
+    ]
+
+# BASS / Streams
+class BASS_FILEPROCS(ctypes.Structure):
+    _fields_ = [
+        ("close",  ctypes.POINTER(FILECLOSEPROC)),
+        ("length", ctypes.POINTER(FILELENPROC)),
+        ("read",   ctypes.POINTER(FILEREADPROC)),
+        ("seek",   ctypes.POINTER(FILESEEKPROC))
+    ]
+
+# BASS / MOD music doesn't have any documented structures
+# BASS / Recording
+class BASS_RECORDINFO(ctypes.Structure):
+    _fields_ = [
+        ("flags",   DWORD), # device capabilities (DSCCAPS_xxx flags)
+        ("formats", DWORD), # supported standard formats (WAVE_FORMAT_xxx flags)
+        ("inputs",  DWORD), # number of inputs
+        ("singlein", BOOL), # TRUE = only 1 input can be set at a time
+        ("freq",    DWORD)  # current input rate
+    ]
+
+# BASS / Channels
+class BASS_CHANNELINFO(ctypes.Structure):
+    _fields_ = [
+        ("freq",    DWORD),
+        ("chans",   DWORD),
+        ("flags",   DWORD),
+        ("ctype",   DWORD),       # type of channel
+        ("origres", DWORD),     # original resolution
+        ("plugin",  HPLUGIN),
+        ("sample",  HSAMPLE),
+        ("filename", CHARP) # const char *
+    ]
+class TAG_APE_BINARY(ctypes.Structure):
+    _fields_ = [
+        ("key",     CHARP),   # const char *
+        ("data",    PTR),  # const void *
+        ("length",  DWORD)
+    ]
+class TAG_BEXT(ctypes.Structure):
+    _fields_ = [
+        ("Description",     CHAR * 256),
+        ("Originator",      CHAR * 32),
+        ("OriginatorReference", CHAR * 32),
+        ("OriginationDate", CHAR * 10), # yyyy-mm-dd
+        ("OriginationTime", CHAR * 8),   # hh-mm-ss
+        ("TimeReference",   QWORD),                 # little-endian
+        ("Version",         WORD),                        # little-endian
+        ("UMID",            BYTE * 64),
+        ("Reserved",        BYTE * 190)
+        #TODO char CodingHistory[]
+    ]
+class TAG_CA_CODEC(ctypes.Structure):
+    _fields_ = [
+        ("ftype", DWORD), # file format
+        ("atype", DWORD), # audio format
+        ("name",  CHARP)  # const char *
+    ]
+class TAG_CART_TIMER(ctypes.Structure):
+    _fields_ = [
+        ("dwUsage", DWORD), # FOURCC timer usage ID
+        ("dwValue", DWORD)  # timer value in samples from head
+    ]
+class TAG_CART(ctypes.Structure):
+    _fields_ = [
+        ("Version",     CHAR * 4),
+        ("Title",       CHAR * 64),
+        ("Artist",      CHAR * 64),
+        ("CutID",       CHAR * 64),
+        ("ClientID",    CHAR * 64),
+        ("Category",    CHAR * 64),
+        ("Classification", CHAR * 64),
+        ("OutCue",      CHAR * 64),
+        ("StartDate",   CHAR * 10),  # yyyy-mm-dd
+        ("StartTime",   CHAR * 8),   # hh:mm:ss
+        ("EndDate",     CHAR * 10),    # yyyy-mm-dd
+        ("EndTime",     CHAR * 8),     # hh:mm:ss
+        ("ProducerAppID", CHAR * 64),
+        ("ProducerAppVersion", CHAR * 64),
+        ("UserDef",     CHAR * 64),
+        ("dwLevelReference", DWORD), # sample value for 0 dB reference
+        ("PostTimer",   TAG_CART_TIMER * 8),
+        ("Reserved",    CHAR * 276), 
+        ("URL",         CHAR * 1024)
+        #TODO char TagText[];
+    ]
+class TAG_CUE_POINT(ctypes.Structure):
+    _fields_ = [
+        ("dwName", DWORD),
+        ("dwPosition", DWORD),
+        ("fccChunk", DWORD),
+        ("dwChunkStart", DWORD),
+        ("dwBlockStart", DWORD),
+        ("dwSampleOffset", DWORD)
+    ]
+class TAG_CUE(ctypes.Structure):
+    _fields_ = [
+        ("dwCuePoints", DWORD)
+        #TODO TAG_CUE_POINT CuePoints[];
+    ]
+class TAG_ID3(ctypes.Structure):
+    _fields_ = [
+        ("id",      CHAR * 3),
+        ("title",   CHAR * 30),
+        ("artist",  CHAR * 30),
+        ("album",   CHAR * 30),
+        ("year",    CHAR * 4),
+        ("comment", CHAR * 30),
+        ("genre",   BYTE)
+    ]
+class TAG_SMPL_LOOP(ctypes.Structure):
+    _fields_ = [
+        ("dwIdentifier", DWORD),
+        ("dwType", DWORD),
+        ("dwStart", DWORD),
+        ("dwEnd", DWORD),
+        ("dwFraction", DWORD),
+        ("dwPlayCount", DWORD)
+    ]
+class TAG_SMPL(ctypes.Structure):
+    _fields_ = [
+        ("dwManufacturer", DWORD),
+        ("dwProduct", DWORD),
+        ("dwSamplePeriod", DWORD),
+        ("dwMIDIUnityNote", DWORD),
+        ("dwMIDIPitchFraction", DWORD),
+        ("dwSMPTEFormat", DWORD),
+        ("dwSMPTEOffset", DWORD),
+        ("cSampleLoops", DWORD),
+        ("cbSamplerData", DWORD)
+        #TODO TAG_SMPL_LOOP SampleLoops[]
+    ]
+
+# BASS / Effects (DirectX 8)
+class BASS_DX8_CHORUS(ctypes.Structure):
+    _fields_ = [
+        ("fWetDryMix",  FLOAT),
+        ("fDepth",      FLOAT),
+        ("fFeedback",   FLOAT),
+        ("fFrequency",  FLOAT),
+        ("lWaveform",   DWORD), # 0=triangle, 1=sine
+        ("fDelay",      FLOAT),
+        ("lPhase",      DWORD)  # BASS_DX8_PHASE_xxx
+    ]
+class BASS_DX8_COMPRESSOR(ctypes.Structure):
+    _fields_ = [
+        ("fGain",       FLOAT),
+        ("fAttack",     FLOAT),
+        ("fRelease",    FLOAT),
+        ("fThreshold",  FLOAT),
+        ("fRatio",      FLOAT),
+        ("fPredelay",   FLOAT)
+    ]
+class BASS_DX8_DISTORTION(ctypes.Structure):
+    _fields_ = [
+        ("fGain",       FLOAT),
+        ("fEdge",       FLOAT),
+        ("fPostEQCenterFrequency", FLOAT),
+        ("fPostEQBandwidth", FLOAT),
+        ("fPreLowpassCutoff", FLOAT)
+    ]
+class BASS_DX8_ECHO(ctypes.Structure):
+    _fields_ = [
+        ("fWetDryMix",  FLOAT),
+        ("fFeedback",   FLOAT),
+        ("fLeftDelay",  FLOAT),
+        ("fRightDelay", FLOAT),
+        ("lPanDelay",   BOOL)
+    ]
+class BASS_DX8_FLANGER(ctypes.Structure):
+    _fields_ = [
+        ("fWetDryMix",  FLOAT),
+        ("fDepth",      FLOAT),
+        ("fFeedback",   FLOAT),
+        ("fFrequency",  FLOAT),
+        ("lWaveform",   DWORD), # 0=triangle, 1=sine
+        ("fDelay",      FLOAT),
+        ("lPhase",      DWORD)  # BASS_DX8_PHASE_xxx
+    ]
+class BASS_DX8_GARGLE(ctypes.Structure):
+    _fields_ = [
+        ("dwRateHz",    DWORD), # Rate of modulation in hz
+        ("dwWaveShape", DWORD)  # 0=triangle, 1=square
+    ]
+class BASS_DX8_I3DL2REVERB(ctypes.Structure):
+    _fields_ = [
+        ("lRoom",       INT),       # [-10000, 0]      default: -1000 mB
+        ("lRoomHF",     INT),       # [-10000, 0]      default: 0 mB
+        ("flRoomRolloffFactor", FLOAT), # [0.0, 10.0]      default: 0.0
+        ("flDecayTime", FLOAT),     # [0.1, 20.0]      default: 1.49s
+        ("flDecayHFRatio", FLOAT),  # [0.1, 2.0]       default: 0.83
+        ("lReflections", INT),      # [-10000, 1000]   default: -2602 mB
+        ("flReflectionsDelay", FLOAT),# [0.0, 0.3]       default: 0.007 s
+        ("lReverb",     INT),       # [-10000, 2000]   default: 200 mB
+        ("flReverbDelay", FLOAT),   # [0.0, 0.1]       default: 0.011 s
+        ("flDiffusion", FLOAT),     # [0.0, 100.0]     default: 100.0 %
+        ("flDensity",   FLOAT),     # [0.0, 100.0]     default: 100.0 %
+        ("flHFReference", FLOAT)    # [20.0, 20000.0]  default: 5000.0 Hz
+    ]
+class BASS_DX8_PARAMEQ(ctypes.Structure):
+    _fields_ = [
+        ("fCenter",     FLOAT),
+        ("fBandwidth",  FLOAT),
+        ("fGain",       FLOAT)
+    ]
+class BASS_DX8_REVERB(ctypes.Structure):
+    _fields_ = [
+        ("fInGain",     FLOAT),        # [-96.0,0.0]            default: 0.0 dB
+        ("fReverbMix",  FLOAT),     # [-96.0,0.0]            default: 0.0 db
+        ("fReverbTime", FLOAT),    # [0.001,3000.0]         default: 1000.0 ms
+        ("fHighFreqRTRatio", FLOAT) # [0.001,0.999]          default: 0.001
+    ]
+class BASS_FX_VOLUME_PARAM(ctypes.Structure):
+    _fields_ = [
+        ("fTarget",     FLOAT),
+        ("fCurrent",    FLOAT),
+        ("fTime",       FLOAT), # In seconds
+        ("lCurve",      DWORD) # 0 for linear, 1 for logarithmic (BASS_SLIDE_LOG) - check constants
+    ]
+
+class WAVEFORMATEX(ctypes.Structure):
+    _pack_ = 1 # From #pragma pack(push,1)
+    _fields_ = [
+        ("wFormatTag", WORD),
+        ("nChannels", WORD),
+        ("nSamplesPerSec", DWORD),
+        ("nAvgBytesPerSec", DWORD),
+        ("nBlockAlign", WORD),
+        ("wBitsPerSample", WORD),
+        ("cbSize", WORD)
+    ]
+LPWAVEFORMATEX = ctypes.POINTER(WAVEFORMATEX)
+#endregion
 
 #region OG header
 
@@ -9,8 +382,9 @@ from .types import MINUSONE
 BASS_CONFIG_THREAD          = 0x40000000 # flag: thread-specific setting
 
 # BASS_CONFIG_IOS_SESSION flags
+#TODO porbably drop afterwards
 class IOSSessionFlags(IntFlag):
-    ''' Flags, using in `BassConfig.ios_seesion`'''
+    ''' Flags, using in `BassConfig.ios_session`'''
     MIX        = 1
     '''Allow other apps to be heard at the same time.'''
     DUCK       = 2
@@ -169,6 +543,70 @@ class SpeakerFlags(IntFlag):
     REAR2          = SIDE
     REAR2LEFT      = SIDELEFT
     REAR2RIGHT     = SIDERIGHT
+
+class ConfigOptions(IntEnum):
+    BUFFER          = 0
+    UPDATEPERIOD    = 1
+    GVOL_SAMPLE     = 4
+    GVOL_STREAM     = 5
+    GVOL_MUSIC      = 6
+    CURVE_VOL       = 7
+    CURVE_PAN       = 8
+    FLOATDSP        = 9
+    ALGORITHM3D     = 10
+    NET_TIMEOUT     = 11
+    NET_BUFFER      = 12
+    PAUSE_NOPLAY    = 13
+    NET_PREBUF      = 15
+    NET_PASSIVE     = 18
+    REC_BUFFER      = 19
+    NET_PLAYLIST    = 21
+    MUSIC_VIRTUAL   = 22
+    VERIFY          = 23
+    UPDATETHREADS   = 24
+    DEV_BUFFER      = 27
+    REC_LOOPBACK    = 28
+    VISTA_TRUEPOS   = 30
+    IOS_SESSION     = 34
+    IOS_MIXAUDIO    = 34 # Alias for BASS_CONFIG_IOS_SESSION
+    DEV_DEFAULT     = 36
+    NET_READTIMEOUT = 37
+    VISTA_SPEAKERS  = 38
+    IOS_SPEAKER     = 39
+    MF_DISABLE      = 40
+    HANDLES         = 41
+    UNICODE         = 42
+    SRC             = 43
+    SRC_SAMPLE      = 44
+    ASYNCFILE_BUFFER = 45
+    OGG_PRESCAN     = 47
+    MF_VIDEO        = 48
+    AIRPLAY         = 49
+    DEV_NONSTOP     = 50
+    IOS_NOCATEGORY  = 51
+    VERIFY_NET      = 52
+    DEV_PERIOD      = 53
+    FLOAT           = 54
+    NET_SEEK        = 56
+    AM_DISABLE      = 58
+    NET_PLAYLIST_DEPTH = 59
+    NET_PREBUF_WAIT = 60
+    ANDROID_SESSIONID = 62
+    WASAPI_PERSIST  = 65
+    REC_WASAPI      = 66
+    ANDROID_AAUDIO  = 67
+    SAMPLE_ONEHANDLE = 69
+    NET_META        = 71
+    NET_RESTRATE    = 72
+    REC_DEFAULT     = 73
+    NORAMP          = 74
+    # BASS_SetConfigPtr options
+    NET_AGENT       = 16
+    NET_PROXY       = 17
+    IOS_NOTIFY      = 46
+    ANDROID_JAVAVM  = 63
+    LIBSSL          = 64
+    FILENAME        = 75
 
 ASYNCFILE              = 0x40000000 # read file asynchronously
 UNICODE                = 0x80000000 # UTF-16
@@ -439,6 +877,7 @@ BASS_IOSNOTIFY_INTERRUPT_END = 2 # interruption ended
 #endregion
 
 #region Custom headers
+
 # BASS_CONFIG_NET_PLAYLIST
 class NetPlaylistOptions(IntEnum):
     NEVER = 0

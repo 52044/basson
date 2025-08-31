@@ -1,5 +1,7 @@
-Licence
+BASS Licence
 =======
+![BASS Logo](docs/bass_logo.png)
+
 BASS is free for non-commercial use. If you are a non-commercial entity
 (eg. an individual) and you are not making any money from your product
 (through sales/advertising/etc), then you can use BASS in it for free.

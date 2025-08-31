@@ -1,8 +1,8 @@
-from .api import api, header
+from .api import header
 from .api import structures as cstrct
 from .api.headprivate import ConfigOptions as cfgo
 from .api.types import MINUSONE
-from . import structures as pstrct
+from . import api, structures as pstrct
 from . import utils
 
 class BASS():
@@ -116,7 +116,7 @@ class BASS():
     def _getconf(self, option:str): 
         try:
             return self.bass.GetConfig(option)
-        except api.BassException as e:
+        except api.BASSException as e:
             if e.code == 20:
                 return None
     def _setconf(self, option:str, value:str): 
@@ -124,7 +124,7 @@ class BASS():
     def _getconfptr(self, option:str):
         try:
             return self.bass.GetConfigPtr(option)
-        except api.BassException as e:
+        except api.BASSException as e:
             if e.code == 20:
                 return None
     def _setconfptr(self, option:str, value:str): 
