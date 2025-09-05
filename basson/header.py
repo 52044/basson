@@ -1,13 +1,10 @@
 # All BASS.h transformed to Python constants and Flags/Enums
 
 from enum import IntFlag, IntEnum
-
-#region Types
-
-# ctypes desctiptions
-
 import ctypes
 import typing
+
+#region CTypes types
 
 INT =   ctypes.c_int        
 BYTE =  ctypes.c_ubyte
@@ -71,7 +68,7 @@ IOSNOTIFYPROC = ctypes.CFUNCTYPE(None, DWORD)
 IOSNotifyProcType = typing.Callable[[DWORD], None]
 #endregion
 
-#region structures
+#region CType Structures
 
 # BASS / Config doesn't have any documented structures
 # BASS / Plugins
@@ -376,175 +373,24 @@ class WAVEFORMATEX(ctypes.Structure):
 LPWAVEFORMATEX = ctypes.POINTER(WAVEFORMATEX)
 #endregion
 
-#region OG header
+#region Constants, Flags, Enums
 
-#TODO is this var using anywhere??
-BASS_CONFIG_THREAD          = 0x40000000 # flag: thread-specific setting
+BASS_CONFIG_THREAD          = 0x40000000 # flag: thread-specific setting #TODO is this var using anywhere??
 
-# BASS_CONFIG_IOS_SESSION flags
-#TODO porbably drop afterwards
-class IOSSessionFlags(IntFlag):
-    ''' Flags, using in `BassConfig.ios_session`'''
-    MIX        = 1
-    '''Allow other apps to be heard at the same time.'''
-    DUCK       = 2
-    '''Allow other apps to be heard at the same time but reduce their volume level.'''
-    AMBIENT    = 4
-    '''Use the "ambient" category. '''
-    SPEAKER    = 8
-    '''Route the output to the speaker instead of the receiver when recording.'''
-    DISABLE    = 16
-    '''Disable BASS's audio session configuration management so that the app can handle that itself.'''
-    DEACTIVATE = 32
-    '''Deactivate the audio session when nothing is playing or recording. It is otherwise only deactivated when there are no initialized devices and during interruptions. '''
-    AIRPLAY    = 64
-    '''Allow playback on Airplay devices when recording (Airplay is always allowed when only playing). '''
-    BTHFP      = 128
-    '''Allow Bluetooth HFP (hands-free) devices when recording (Bluetooth is always allowed when only playing).'''
-    BTA2DP     = 0x100
-    '''Allow Bluetooth A2DP devices when recording (Bluetooth is always allowed when only playing).'''
+class CommonFlag(IntFlag):
+    ASYNCFILE:int              = 0x40000000
+    """Read file asyncronosly"""
+    UNICODE:int                = 0x80000000
+    """String argument is UTF-8 encoded\n\nProbably using only on Windows"""
+    NODEVICE = 0x20000
+    """`Basson.Channel.device` option, set device to \"no device\""""
 
-# BASS_Init flags
-class DeviceFlags(IntFlag):
-    BITS8           = 1 # unused
-    MONO            = 2 # mono
-    DIMENSIONAL     = 4 # unused
-    BITS16          = 8 # limit output to 16-bit
-    REINIT          = 128 # reinitialize
-    LATENCY         = 0x100 # unused
-    CPSPEAKERS      = 0x400 # unused
-    SPEAKERS        = 0x800 # force enabling of speaker assignment
-    NOSPEAKER       = 0x1000 # ignore speaker arrangement
-    DMIX            = 0x2000 # use ALSA "dmix" plugin
-    FREQ            = 0x4000 # set device sample rate
-    STEREO          = 0x8000 # limit output to stereo
-    HOG             = 0x10000 # hog/exclusive mode
-    AUDIOTRACK      = 0x20000 # use AudioTrack output
-    DSOUND          = 0x40000 # use DirectSound output
-    SOFTWARE        = 0x80000 # disable hardware/fastpath output
-
-# software 3D mixing algorithms (used with BASS_CONFIG_3DALGORITHM)
-class D3AlorithmsOptions(IntEnum):
-    DEFAULT          = 0
-    '''If at least 4 speakers are available then the sound is panned among them'''
-    OFF              = 1
-    '''Left and right panning on only 2 speakers is used'''
-    FULL             = 2
-    LIGHT            = 3
-
-# DirectSound interfaces (for use with BASS_GetDSoundObject)
-BASS_OBJECT_DS              = 1 # IDirectSound
-BASS_OBJECT_DS3DL           = 2 # IDirectSound3DListener
-
-# BASS_DEVICEINFO flags
-BASS_DEVICE_ENABLED         = 1
-BASS_DEVICE_DEFAULT         = 2
-BASS_DEVICE_INIT            = 4
-BASS_DEVICE_LOOPBACK        = 8
-BASS_DEVICE_DEFAULTCOM      = 128
-
-BASS_DEVICE_TYPE_MASK       = 0xff000000
-BASS_DEVICE_TYPE_NETWORK    = 0x01000000
-BASS_DEVICE_TYPE_SPEAKERS   = 0x02000000
-BASS_DEVICE_TYPE_LINE       = 0x03000000
-BASS_DEVICE_TYPE_HEADPHONES = 0x04000000
-BASS_DEVICE_TYPE_MICROPHONE = 0x05000000
-BASS_DEVICE_TYPE_HEADSET    = 0x06000000
-BASS_DEVICE_TYPE_HANDSET    = 0x07000000
-BASS_DEVICE_TYPE_DIGITAL    = 0x08000000
-BASS_DEVICE_TYPE_SPDIF      = 0x09000000
-BASS_DEVICE_TYPE_HDMI       = 0x0a000000
-BASS_DEVICE_TYPE_DISPLAYPORT = 0x40000000
-
-# BASS_GetDeviceInfo flags
-BASS_DEVICES_AIRPLAY        = 0x1000000
-
-# defines for formats field of BASS_RECORDINFO (from MMSYSTEM.H)
-WAVE_FORMAT_1M08            = 0x00000001 # 11.025 kHz, Mono,   8-bit
-WAVE_FORMAT_1S08            = 0x00000002 # 11.025 kHz, Stereo, 8-bit
-WAVE_FORMAT_1M16            = 0x00000004 # 11.025 kHz, Mono,   16-bit
-WAVE_FORMAT_1S16            = 0x00000008 # 11.025 kHz, Stereo, 16-bit
-WAVE_FORMAT_2M08            = 0x00000010 # 22.05  kHz, Mono,   8-bit
-WAVE_FORMAT_2S08            = 0x00000020 # 22.05  kHz, Stereo, 8-bit
-WAVE_FORMAT_2M16            = 0x00000040 # 22.05  kHz, Mono,   16-bit
-WAVE_FORMAT_2S16            = 0x00000080 # 22.05  kHz, Stereo, 16-bit
-WAVE_FORMAT_4M08            = 0x00000100 # 44.1   kHz, Mono,   8-bit
-WAVE_FORMAT_4S08            = 0x00000200 # 44.1   kHz, Stereo, 8-bit
-WAVE_FORMAT_4M16            = 0x00000400 # 44.1   kHz, Mono,   16-bit
-WAVE_FORMAT_4S16            = 0x00000800 # 44.1   kHz, Stereo, 16-bit
-
-# BASS_SAMPLE flags
-class SampleFlags(IntFlag):
-    BITS8           = 1 # 8 bit
-    FLOAT           = 256 # 32 bit floating-point
-    MONO            = 2 # mono
-    LOOP            = 4 # looped
-    D3              = 8 # 3D functionality
-    SOFTWARE        = 16 # unused
-    MUTEMAX         = 32 # mute at max distance (3D only)
-    VAM             = 64 # unused
-    FX              = 128 # unused
-    OVER_VOL        = 0x10000 # override lowest volume
-    OVER_POS        = 0x20000 # override longest playing
-    OVER_DIST       = 0x30000 # override furthest from listener (3D only)
-
-class StreamFlags(IntFlag):
-    PRESCAN         = 0x20000 # scan file for accurate seeking and length
-    AUTOFREE        = 0x40000 # automatically free the stream when it stops/ends
-    RESTRATE        = 0x80000 # restrict the download rate of internet file stream
-    BLOCK           = 0x100000 # download internet file stream in small blocks
-    DECODE          = 0x200000 # don't play the stream, only decode
-    STATUS          = 0x800000 # give server status info (HTTP/ICY tags) in DOWNLOADPROC
-
-BASS_MP3_IGNOREDELAY        = 0x200 # ignore LAME/Xing/VBRI/iTunes delay & padding info
-BASS_MP3_SETPOS             = StreamFlags.PRESCAN
-
-class MusicFlags(IntFlag):
-    FLOAT            = SampleFlags.FLOAT
-    MONO             = SampleFlags.MONO
-    LOOP             = SampleFlags.LOOP
-    D3               = SampleFlags.D3
-    FX               = SampleFlags.FX
-    AUTOFREE         = StreamFlags.AUTOFREE
-    DECODE           = StreamFlags.DECODE
-    PRESCAN          = StreamFlags.PRESCAN # calculate playback length
-    CALCLEN          = PRESCAN
-    RAMP             = 0x200 # normal ramping
-    RAMPS            = 0x400 # sensitive ramping
-    SURROUND         = 0x800 # surround sound
-    SURROUND2        = 0x1000 # surround sound (mode 2)
-    FT2PAN           = 0x2000 # apply FastTracker 2 panning to XM files
-    FT2MOD           = 0x2000 # play .MOD as FastTracker 2 does
-    PT1MOD           = 0x4000 # play .MOD as ProTracker 1 does
-    NONINTER         = 0x10000 # non-interpolated sample mixing
-    SINCINTER        = 0x800000 # sinc interpolated sample mixing
-    POSRESET         = 0x8000 # stop all notes when moving position
-    POSRESETEX       = 0x400000 # stop all notes and reset bmp/etc when moving position
-    STOPBACK         = 0x80000 # stop the music on a backwards jump effect
-    NOSAMPLE         = 0x100000 # don't load the samples
-
-# Speaker assignment flags
-class SpeakerFlags(IntFlag):
-    FRONT          = 0x1000000 # front speakers
-    REAR           = 0x2000000 # rear speakers
-    CENLFE         = 0x3000000 # center & LFE speakers (5.1)
-    SIDE           = 0x4000000 # side speakers (7.1)
-    LEFT           = 0x10000000 # modifier: left
-    RIGHT          = 0x20000000 # modifier: right
-
-    FRONTLEFT      = FRONT  | LEFT
-    FRONTRIGHT     = FRONT  | RIGHT
-    REARLEFT       = REAR   | LEFT
-    REARRIGHT      = REAR   | RIGHT
-    CENTER         = CENLFE | LEFT
-    LFE            = CENLFE | RIGHT
-    SIDELEFT       = SIDE   | LEFT
-    SIDERIGHT      = SIDE   | RIGHT
-    REAR2          = SIDE
-    REAR2LEFT      = SIDELEFT
-    REAR2RIGHT     = SIDERIGHT
-
-class ConfigOptions(IntEnum):
+class ConfigOption(IntEnum):
+    """Options, using in `BASS.GetConfig*()`.\n
+    In Basson it already provided as atributes. f.e.:
+    ```
+    BASS_GetConfig(BASS_CONFIG_HANDLES) == basson.handles
+    ```"""
     BUFFER          = 0
     UPDATEPERIOD    = 1
     GVOL_SAMPLE     = 4
@@ -608,8 +454,178 @@ class ConfigOptions(IntEnum):
     LIBSSL          = 64
     FILENAME        = 75
 
-ASYNCFILE              = 0x40000000 # read file asynchronously
-UNICODE                = 0x80000000 # UTF-16
+class IOSSessionFlag(IntFlag): #TODO porbably drop afterwards
+    ''' Flags, using in `basson.ios_session`'''
+    MIX        = 1
+    '''Allow other apps to be heard at the same time.'''
+    DUCK       = 2
+    '''Allow other apps to be heard at the same time but reduce their volume level.'''
+    AMBIENT    = 4
+    '''Use the "ambient" category. '''
+    SPEAKER    = 8
+    '''Route the output to the speaker instead of the receiver when recording.'''
+    DISABLE    = 16
+    '''Disable BASS's audio session configuration management so that the app can handle that itself.'''
+    DEACTIVATE = 32
+    '''Deactivate the audio session when nothing is playing or recording. It is otherwise only deactivated when there are no initialized devices and during interruptions. '''
+    AIRPLAY    = 64
+    '''Allow playback on Airplay devices when recording (Airplay is always allowed when only playing). '''
+    BTHFP      = 128
+    '''Allow Bluetooth HFP (hands-free) devices when recording (Bluetooth is always allowed when only playing).'''
+    BTA2DP     = 0x100
+    '''Allow Bluetooth A2DP devices when recording (Bluetooth is always allowed when only playing).'''
+
+class DeviceFlag(IntFlag):
+    ''' Flags ising while `basson.init()` initialization or retrive these flags after'''
+    #BITS8           = 1 # unused
+    MONO            = 2
+    '''Mono output'''
+    #DIMENSIONAL     = 4 # unused
+    BITS16          = 8
+    '''Limit output to 16-bit'''
+    REINIT          = 128
+    '''Reinitialize the device while retaining the device's existing BASS channels and 3D settings'''
+    #LATENCY         = 0x100 # unused
+    #CPSPEAKERS      = 0x400 # unused
+    SPEAKERS        = 0x800
+    '''Force enable 8-channel output'''
+    NOSPEAKER       = 0x1000
+    '''Ignore speaker arrangement'''
+    DMIX            = 0x2000
+    '''Use ALSA "dmix" plugin'''
+    FREQ            = 0x4000
+    '''Set device's samplerate to `samplerate`'''
+    STEREO          = 0x8000
+    '''Stereo output'''
+    HOG             = 0x10000
+    """HOG / Exclusive mode"""
+    AUDIOTRACK      = 0x20000
+    """Use AudioTrack output"""
+    DSOUND          = 0x40000
+    """Use DirectSound output"""
+    SOFTWARE        = 0x80000
+    """Disable hardware/fastpath output"""
+
+class D3AlorithmsOption(IntEnum):
+    """Software 3D mixing algorithms options in `basson.d3algorithm`"""
+    DEFAULT          = 0
+    '''If at least 4 speakers are available then the sound is panned among them'''
+    OFF              = 1
+    '''Left and right panning on only 2 speakers is used'''
+    FULL             = 2
+    LIGHT            = 3
+
+# DirectSound interfaces (for use with BASS_GetDSoundObject)
+BASS_OBJECT_DS              = 1 # IDirectSound
+BASS_OBJECT_DS3DL           = 2 # IDirectSound3DListener
+
+# BASS_DEVICEINFO flags
+BASS_DEVICE_ENABLED         = 1
+BASS_DEVICE_DEFAULT         = 2
+BASS_DEVICE_INIT            = 4
+BASS_DEVICE_LOOPBACK        = 8
+BASS_DEVICE_DEFAULTCOM      = 128
+
+BASS_DEVICE_TYPE_MASK       = 0xff000000
+BASS_DEVICE_TYPE_NETWORK    = 0x01000000
+BASS_DEVICE_TYPE_SPEAKERS   = 0x02000000
+BASS_DEVICE_TYPE_LINE       = 0x03000000
+BASS_DEVICE_TYPE_HEADPHONES = 0x04000000
+BASS_DEVICE_TYPE_MICROPHONE = 0x05000000
+BASS_DEVICE_TYPE_HEADSET    = 0x06000000
+BASS_DEVICE_TYPE_HANDSET    = 0x07000000
+BASS_DEVICE_TYPE_DIGITAL    = 0x08000000
+BASS_DEVICE_TYPE_SPDIF      = 0x09000000
+BASS_DEVICE_TYPE_HDMI       = 0x0a000000
+BASS_DEVICE_TYPE_DISPLAYPORT = 0x40000000
+
+# BASS_GetDeviceInfo flags
+BASS_DEVICES_AIRPLAY        = 0x1000000
+
+# defines for formats field of BASS_RECORDINFO (from MMSYSTEM.H)
+WAVE_FORMAT_1M08            = 0x00000001 # 11.025 kHz, Mono,   8-bit
+WAVE_FORMAT_1S08            = 0x00000002 # 11.025 kHz, Stereo, 8-bit
+WAVE_FORMAT_1M16            = 0x00000004 # 11.025 kHz, Mono,   16-bit
+WAVE_FORMAT_1S16            = 0x00000008 # 11.025 kHz, Stereo, 16-bit
+WAVE_FORMAT_2M08            = 0x00000010 # 22.05  kHz, Mono,   8-bit
+WAVE_FORMAT_2S08            = 0x00000020 # 22.05  kHz, Stereo, 8-bit
+WAVE_FORMAT_2M16            = 0x00000040 # 22.05  kHz, Mono,   16-bit
+WAVE_FORMAT_2S16            = 0x00000080 # 22.05  kHz, Stereo, 16-bit
+WAVE_FORMAT_4M08            = 0x00000100 # 44.1   kHz, Mono,   8-bit
+WAVE_FORMAT_4S08            = 0x00000200 # 44.1   kHz, Stereo, 8-bit
+WAVE_FORMAT_4M16            = 0x00000400 # 44.1   kHz, Mono,   16-bit
+WAVE_FORMAT_4S16            = 0x00000800 # 44.1   kHz, Stereo, 16-bit
+
+# BASS_SAMPLE flags
+class SampleFlag(IntFlag):
+    BITS8           = 1 # 8 bit
+    FLOAT           = 256 # 32 bit floating-point
+    MONO            = 2 # mono
+    LOOP            = 4 # looped
+    D3              = 8 # 3D functionality
+    SOFTWARE        = 16 # unused
+    MUTEMAX         = 32 # mute at max distance (3D only)
+    VAM             = 64 # unused
+    FX              = 128 # unused
+    OVER_VOL        = 0x10000 # override lowest volume
+    OVER_POS        = 0x20000 # override longest playing
+    OVER_DIST       = 0x30000 # override furthest from listener (3D only)
+
+class StreamFlag(IntFlag):
+    PRESCAN         = 0x20000 # scan file for accurate seeking and length
+    AUTOFREE        = 0x40000 # automatically free the stream when it stops/ends
+    RESTRATE        = 0x80000 # restrict the download rate of internet file stream
+    BLOCK           = 0x100000 # download internet file stream in small blocks
+    DECODE          = 0x200000 # don't play the stream, only decode
+    STATUS          = 0x800000 # give server status info (HTTP/ICY tags) in DOWNLOADPROC
+
+BASS_MP3_IGNOREDELAY        = 0x200 # ignore LAME/Xing/VBRI/iTunes delay & padding info
+BASS_MP3_SETPOS             = StreamFlag.PRESCAN
+
+class MusicFlags(IntFlag):
+    FLOAT            = SampleFlag.FLOAT
+    MONO             = SampleFlag.MONO
+    LOOP             = SampleFlag.LOOP
+    D3               = SampleFlag.D3
+    FX               = SampleFlag.FX
+    AUTOFREE         = StreamFlag.AUTOFREE
+    DECODE           = StreamFlag.DECODE
+    PRESCAN          = StreamFlag.PRESCAN # calculate playback length
+    CALCLEN          = PRESCAN
+    RAMP             = 0x200 # normal ramping
+    RAMPS            = 0x400 # sensitive ramping
+    SURROUND         = 0x800 # surround sound
+    SURROUND2        = 0x1000 # surround sound (mode 2)
+    FT2PAN           = 0x2000 # apply FastTracker 2 panning to XM files
+    FT2MOD           = 0x2000 # play .MOD as FastTracker 2 does
+    PT1MOD           = 0x4000 # play .MOD as ProTracker 1 does
+    NONINTER         = 0x10000 # non-interpolated sample mixing
+    SINCINTER        = 0x800000 # sinc interpolated sample mixing
+    POSRESET         = 0x8000 # stop all notes when moving position
+    POSRESETEX       = 0x400000 # stop all notes and reset bmp/etc when moving position
+    STOPBACK         = 0x80000 # stop the music on a backwards jump effect
+    NOSAMPLE         = 0x100000 # don't load the samples
+
+# Speaker assignment flags
+class SpeakerFlags(IntFlag):
+    FRONT          = 0x1000000 # front speakers
+    REAR           = 0x2000000 # rear speakers
+    CENLFE         = 0x3000000 # center & LFE speakers (5.1)
+    SIDE           = 0x4000000 # side speakers (7.1)
+    LEFT           = 0x10000000 # modifier: left
+    RIGHT          = 0x20000000 # modifier: right
+
+    FRONTLEFT      = FRONT  | LEFT
+    FRONTRIGHT     = FRONT  | RIGHT
+    REARLEFT       = REAR   | LEFT
+    REARRIGHT      = REAR   | RIGHT
+    CENTER         = CENLFE | LEFT
+    LFE            = CENLFE | RIGHT
+    SIDELEFT       = SIDE   | LEFT
+    SIDERIGHT      = SIDE   | RIGHT
+    REAR2          = SIDE
+    REAR2LEFT      = SIDELEFT
+    REAR2RIGHT     = SIDERIGHT
 
 BASS_RECORD_ECHOCANCEL      = 0x2000
 BASS_RECORD_AGC             = 0x4000
@@ -721,7 +737,7 @@ class ChannelStatus(IntEnum):
     PAUSED_DEVICE   = 4
 
 # Channel attributes
-class ChannelOptions(IntEnum):
+class ChannelOption(IntEnum):
     FREQ            = 1
     VOL             = 2
     PAN             = 3
@@ -756,7 +772,7 @@ class ChannelOptions(IntEnum):
 BASS_SLIDE_LOG              = 0x1000000
 
 # BASS_ChannelGetData flags
-class DataLengthOptions(IntEnum):
+class DataLengthOption(IntEnum):
     FFT256            = 0x80000000 # 256 sample FFT
     FFT512            = 0x80000001 # 512 FFT
     FFT1024           = 0x80000002 # 1024 FFT
@@ -765,7 +781,7 @@ class DataLengthOptions(IntEnum):
     FFT8192           = 0x80000005 # 8192 FFT
     FFT16384          = 0x80000006 # 16384 FFT
     FFT32768          = 0x80000007 # 32768 FFT
-class DataFlags(IntFlag):
+class DataFlag(IntFlag):
     AVAILABLE         = 0 # query how much data is buffered
     NOREMOVE          = 0x10000000 # flag: don't remove data from recording buffer
     FIXED             = 0x20000000 # unused
@@ -818,7 +834,7 @@ BASS_TAG_MUSIC_CHAN = 0x10200 # + channel #, MOD channel name : ANSI string
 BASS_TAG_MUSIC_SAMPLE = 0x10300 # + sample #, MOD sample name : ANSI string
 
 # BASS_ChannelGetLength/GetPosition/SetPosition modes
-class PosOptions(IntEnum):
+class PosModeOption(IntEnum):
     BYTE = 0 # byte position
     MUSIC_ORDER = 1 # order.row position, MAKELONG(order,row)
     OGG = 3 # OGG bitstream number
@@ -831,9 +847,6 @@ class PosOptions(IntEnum):
     DECODE = 0x10000000 # flag: get the decoding (not playing) position
     DECODETO = 0x20000000 # flag: decode to the position instead of seeking
     SCAN = 0x40000000 # flag: scan to the position
-
-# BASS_ChannelSetDevice/GetDevice option
-BASS_NODEVICE = 0x20000
 
 # BASS_RecordSetInput flags
 BASS_INPUT_OFF = 0x10000
@@ -879,40 +892,40 @@ BASS_IOSNOTIFY_INTERRUPT_END = 2 # interruption ended
 #region Custom headers
 
 # BASS_CONFIG_NET_PLAYLIST
-class NetPlaylistOptions(IntEnum):
+class NetPlaylistOption(IntEnum):
     NEVER = 0
     ONLYSTREAMCREATEURL = 1
     STREAMCREATEFILE = 2
 
 # BASS_CONFIG_NORAMP
-class NorampOptions(IntEnum):
+class NorampOption(IntEnum):
     ENABLE = 0
     DISABLE = 1
     RAMPINGINOFF = 2
     RAMPINGOUTOFF = 3
 
 # BASS_CONFIG_SCR
-class SamplerateConversionOptions(IntEnum):
+class SamplerateConversionOption(IntEnum):
     LINEAR = 0
     POINT8SINC = 1
     POINT16SINC = 2
     POINT32SINC = 3
     POINT64SINC = 4
 
-# Bass.IsStarted
-class StatusOptions(IntEnum):
+class StatusOption(IntEnum):
+    """Status options of audio device"""
     NOTSTARTED = 0
     ACTIVE = 1
     INACTIVE = 2
     INTERRUPTED = 3 # iOS specific
 
 # BASS.GetInfo.flags
-class InfoFlags(IntFlag):
+class InfoFlag(IntFlag):
     EMULDRIVER = 0x00000020
     CERTIFIED = 0x00000040
     HARDWARE = 0x80000000
 
-class DXVersionOptions(IntEnum):
+class DXVersionOption(IntEnum):
     DX9 = 9
     DX8 = 8
     DX7 = 7
@@ -922,11 +935,6 @@ class DXVersionOptions(IntEnum):
 # BASS_RECORDINFO flags (from DSOUND.H)
 DSCCAPS_EMULDRIVER          = 0x00000020 # device does not have hardware DirectSound recording support
 DSCCAPS_CERTIFIED           = 0x00000040 # device driver has been certified by Microsoft
-
-# BASS_CommonFlags flags. It have common (uncategorised) flags and constants
-class CommonFlags(IntFlag):
-    ASYNCFILE = ASYNCFILE
-    UNICODE = UNICODE
 
 # Channel.WHOAMI
 class ChannelType(IntEnum):

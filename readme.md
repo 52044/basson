@@ -14,7 +14,6 @@ Python user-frendly wrapper over [original BASS library](https://www.un4seen.com
 * All `Channel` parameters implemented as properties (no more `BASS_GetAttribute`!)
 * Safe execution (BASS errors raises exceptions)
 * Proper inline documentation*
-* Pylance frendly
 * Access to BASS API directly, via `basson.bass.__xyz__`
 
 ## How to use

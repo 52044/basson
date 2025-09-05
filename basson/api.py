@@ -9,10 +9,14 @@ BASSAPI = 0x204
 
 #region BASS instance
 class BASS:
-    def __init__(self, dll_path, safe=True):
-        """ Creates a new instance of the BASS library 
+    """ BASS API provider"""
+    def __init__(self, dll_path:str, safe=True):
+        """ Creates a new instance of the BASS library\n
+        * On Windows, use `BASS.dll`
+        * On MacOS, use `libbass.dylib`
+        * On Linux, use `libbass.so`
         
-        :param dll_path: Path to the BASS library. On Windows, use `BASS.dll`. On MacOS, use `libbass.dylib`. On Linux, use `libbass.so`
+        :param dll_path: Path to the BASS library. 
         :param safe: If True, wrapper will be raise errors, if BASS returns an error value
         """
 
@@ -827,10 +831,9 @@ class BASS:
     def ChannelGetAttribute(self, handle:HANDLE, attrib:DWORD, value:FLOAT) -> BOOL:
         """Retrieves the value of a channel's attribute.\n
         https://www.un4seen.com/doc/#bass/BASS_ChannelGetAttribute.html"""
-        c_value = FLOAT() #FIXME нужно возращать значение в value, и возращать результат выполнения
-        result = self.dll.BASS_ChannelGetAttribute(handle, attrib, ctypes.byref(c_value))
+        result = self.dll.BASS_ChannelGetAttribute(handle, attrib, ctypes.byref(value))
         if self.safe and result == 0: self._raise_error('BASS_ChannelGetAttribute')
-        return c_value.value
+        return result
 
     def ChannelGetAttributeEx(self, handle:HANDLE, attrib:DWORD, value:PTR|None, size:DWORD) -> DWORD:
         """Retrieves the value of a channel's attribute.\n

@@ -18,12 +18,12 @@ class BassTkPlayer:
         # === Init Bass ===
         if get_os() == "windows":
             lib = os.path.join("dll", "bass_x64.dll")
-            self.unicode = basson.CommonFlags.UNICODE
+            self.unicode = basson.CommonFlag.UNICODE
         else:
             lib = os.path.join("dll", "libbass.dylib")
 
-        self.bass = basson.BASS(lib)
-        self.bass.init(-1, 44100, basson.DeviceFlags.STEREO)
+        self.bass = basson.Basson(lib)
+        self.bass.init(-1, 44100, basson.DeviceFlag.STEREO)
 
         self.stream = None
 
