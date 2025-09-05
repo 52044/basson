@@ -1,18 +1,18 @@
-from .api import api, header
-from .api import structures as cstrct
-from .api.headprivate import ConfigOptions as cfgo
-from .api.types import MINUSONE
-from . import structures as pstrct
+from . import api
+from .api import ConfigOption as cfgo
+from .api import MINUSONE
+
+from . import structures
 from . import utils
 
-class BASS():
+class Basson():
     def __init__(self, dll_path:str, safe_execution:bool=True):
         ''' Python-frendly wrapper over BASS library
         
         :param dll_path: Path to BASS dll
         :param safe_execution: If BASS after execution command returns `error` value, code will raise exception'''
 
-        if dll_path == None: raise ValueError('Path to BASS library don\'t setted')#TODO autodetection
+        if dll_path == None: raise ValueError('Path to BASS library is invalid')
         self.bass = api.BASS(dll_path, safe_execution)
         
         #self.config = pstrct.BassConfig(self.bass)
@@ -24,17 +24,23 @@ class BASS():
 #region Core functions
     @property
     def error_code(self) -> int:
-        ''' Returns error code for the last recent BASS function call'''
+        ''' Error code for the last recent BASS function call'''
         return self.bass.ErrorGetCode()
 
     @property
     def cpu_usage(self) -> float:
-        ''' CPU usage of BASS library '''
+        ''' CPU usage of BASS library in %'''
         return self.bass.GetCPU()
     
     @property
     def device(self) -> int:
-        ''' Number of current audio device '''
+        ''' The number of current audio device\n
+        * `-1` is system default device
+        * `0` is no sound device
+        * `1...` is sound device by number\n
+        :raises BASSError.code == INIT (on get): `Basson.init()` hasn't been succsessfuly called
+        :raises BASSError.code == INIT (on set): Device has not been initialized
+        :raises BASSError.code == DEVICE: Device number is invalid'''
         return self.bass.GetDevice()
     @device.setter
     def device(self, number:int): 
@@ -42,53 +48,74 @@ class BASS():
 
     @property
     def volume(self) -> float:
-        ''' Master (system) volume level '''
+        ''' Master (system) volume level\n
+        Value between `0.0 - 1.0`\n
+        :raises BASSError.code == INIT: `Basson.init()` hasn't been succsessfully called
+        :raises BASSError.code == NOTAVAIL: There is no volume control when using "no sound" device
+        :raises BASSError.code == ILLPARAM: Level is invalid'''
         return self.bass.GetVolume()
     @volume.setter
     def volume(self, level:float):
         self.bass.SetVolume(level)
 
     @property
-    def version(self) -> int:
-        ''' Version of loaded BASS library\n
-        For human redability please use `basson.utils.decode_version(int)`'''
-        return self.bass.GetVersion()
+    def version(self, return_hex=False) -> str|int:
+        ''' Version of loaded BASS library
+        :param return_hex: Return value as hexidecimal, overvise return decoded version as string'''
+        if return_hex:
+            return self.bass.GetVersion()
+        else:
+            return utils.decode_version(self.bass.GetVersion())
 
     def pause(self):
-        ''' Stops output, pausing all handles (music/samples/streams) '''
+        ''' Stops output, pausing all channels (*Music* / *Samples* / *Streams*) 
+        :raises BASSError.code == INIT: `Basson.init()` hasn't been succsessfully called'''
         self.bass.Pause()
 
     def start(self):
-        ''' Starts/resumes output '''
+        ''' Starts/resumes output 
+        :raises BASSError.code == INIT: `Basson.init()` hasn't been succsessfully called
+        :raises BASSError.code == BUSY: **[iOS]** App's audio has been interrupted and cannot be resumed yet
+        :raises BASSError.code == REINIT: Device requied be reinitialized or in process of that'''
         self.bass.Start()
     
     def stop(self):
-        ''' Stops output, stops all handles (music/samples/streams)'''
+        ''' Stops output, stops all channels (*Music* / *Samples* / *Streams*)
+        :raises BASSError.code == INIT: `init` hasn't been succsessfully called'''
         self.bass.Stop()
 
     def update(self, length:int):
-        ''' Updates `HStream` and `HMusic` channels playback buffers
-        
-        :param length: Amount of data to render, in ms'''
+        ''' Updates *Stream* and *Music* channels playback buffers
+        :param length: Amount of data to render, in ms
+        :raises BASSError.code == NOTAVAIL: Updating is already in process'''
         self.bass.Update(length)
     
-    def init(self, device:int, samplerate:int, flags:header.DeviceFlags):
+    def init(self, device:int, samplerate:int, flags:api.DeviceFlag):
         ''' Initialize output device 
-        
         :param device: Number of desirable audio device.\n
-            Set to `-1` to default device, `0` - no output
+            * `-1` is system default device
+            * `0` is no sound device
+            * `1...` is sound device by number
         :param samplerate: Samplerate of output audiostreams
-        :param flags: Combinations of `DeviceFlags`'''
+        :param flags: Combinations of `DeviceFlag`
+        :raises BASSError.code == DEVICE: `device` is invalid
+        :raises BASSError.code == NOTAVAIL: `DeviceFlag.REINIT` cannot be used when `device` is -1
+        :raises BASSError.code == DRIVER: There is no avaliable device driver
+        :raises BASSError.code == BUSY: Something else has exclusive use of that `device`
+        :raises BASSError.code == FORMAT: `samplerate` is not supported by this `device`
+        :raises BASSError.code == MEM: There is insufficient memory'''
         self.bass.Init(device, samplerate, flags, 0, None)
 
     @property
-    def status(self) -> header.StatusOptions:
+    def status(self) -> api.StatusOption:
         ''' Status of output device '''
         return self.bass.IsStarted()
     
-    def device_info(self, device:int) -> pstrct.DeviceInfo:
-        ''' Retrives information on an output device'''
-        info = cstrct.BASS_DEVICEINFO()
+    def device_info(self, device:int) -> structures.DeviceInfo:
+        ''' Retrives information on an output device
+        :param device: The number of desirable device
+        :raises BASSError.code == DEVICE: `device` is invalid'''
+        info = api.BASS_DEVICEINFO()
         self.bass.GetDeviceInfo(device, info)
         return {
             'driver': info.driver.decode(),
@@ -96,9 +123,9 @@ class BASS():
             'name': info.name.decode(utils.get_locale())
         }
     
-    def info(self) -> pstrct.Info:
+    def info(self) -> structures.Info:
         ''' Get information of current using device. '''
-        info = cstrct.BASS_INFO()
+        info = api.BASS_INFO()
         self.bass.GetInfo(info)
         return {
             'dsver': info.dsver,
@@ -112,11 +139,11 @@ class BASS():
 #endregion
 
 # region Config
-
+#TODO proper docstring in this section
     def _getconf(self, option:str): 
         try:
             return self.bass.GetConfig(option)
-        except api.BassException as e:
+        except api.BASSError as e:
             if e.code == 20:
                 return None
     def _setconf(self, option:str, value:str): 
@@ -124,18 +151,18 @@ class BASS():
     def _getconfptr(self, option:str):
         try:
             return self.bass.GetConfigPtr(option)
-        except api.BassException as e:
+        except api.BASSError as e:
             if e.code == 20:
                 return None
     def _setconfptr(self, option:str, value:str): 
         self.bass.SetConfigPtr(option, value)
 
     @property
-    def algorithm3d(self) -> header.D3AlorithmsOptions:  
+    def algorithm3d(self) -> api.D3AlorithmsOption:  
         ''' The positioning algorithm for 3D channels '''
         return self._getconf(cfgo.ALGORITHM3D)
     @algorithm3d.setter
-    def algorithm3d(self, algo: header.D3AlorithmsOptions): 
+    def algorithm3d(self, algo: api.D3AlorithmsOption): 
         self._setconf(cfgo.ALGORITHM3D, algo)
 
     @property
@@ -273,12 +300,12 @@ class BASS():
         return self._getconf(cfgo.HANDLES)
                                           
     @property
-    def ios_session(self) -> header.IOSSessionFlags: 
+    def ios_session(self) -> api.IOSSessionFlag: 
         '''[iOS] Audio session configuration'''
         #TODO check for -1
         return self._getconf(cfgo.IOS_SESSION)
     @ios_session.setter
-    def ios_session(self, config: header.IOSSessionFlags): 
+    def ios_session(self, config: api.IOSSessionFlag): 
         self._setconf(cfgo.IOS_SESSION, config)
 
     @property
@@ -347,11 +374,11 @@ class BASS():
         self._setconf(cfgo.NET_PASSIVE, passive)
     
     @property
-    def net_playlist(self) -> header.NetPlaylistOptions: 
+    def net_playlist(self) -> api.NetPlaylistOption: 
         ''' Enable process URLs in PSL and M3U playlists'''
         return self._getconf(cfgo.NET_PLAYLIST)
     @net_playlist.setter
-    def net_playlist(self, playlist:header.NetPlaylistOptions): 
+    def net_playlist(self, playlist:api.NetPlaylistOption): 
         self._setconf(cfgo.NET_PLAYLIST, playlist)
 
     @property
@@ -407,11 +434,11 @@ class BASS():
         self._setconf(cfgo.NET_TIMEOUT, timeout)
 
     @property
-    def noramp(self) -> header.NorampOptions:
+    def noramp(self) -> api.NorampOption:
         ''' Playback ramping setting'''
         return self._getconf(cfgo.NORAMP)
     @noramp.setter
-    def noramp(self, noramp:header.NorampOptions): 
+    def noramp(self, noramp:api.NorampOption): 
         self._setconf(cfgo.NORAMP, noramp)
 
     @property
@@ -455,19 +482,19 @@ class BASS():
         self._setconf(cfgo.SAMPLE_ONEHANDLE, onehandle)
 
     @property
-    def src(self) -> header.SamplerateConversionOptions|int: 
+    def src(self) -> api.SamplerateConversionOption|int: 
         ''' Default samplerate conversion quality'''
         return self._getconf(cfgo.SRC)
     @src.setter
-    def src(self, quality:header.SamplerateConversionOptions|int):
+    def src(self, quality:api.SamplerateConversionOption|int):
         self._setconf(cfgo.SRC, quality)
 
     @property
-    def src_sample(self) -> header.SamplerateConversionOptions|int: 
+    def src_sample(self) -> api.SamplerateConversionOption|int: 
         ''' Default samplerate conversion quality for sample channels'''
         return self._getconf(cfgo.SRC_SAMPLE)
     @src_sample.setter
-    def src_sample(self, quality:header.SamplerateConversionOptions|int): 
+    def src_sample(self, quality:api.SamplerateConversionOption|int): 
         self._setconf(cfgo.SRC_SAMPLE, quality)
 
     @property

@@ -1,18 +1,18 @@
-
+from . import api
 from .channel import Channel
-from .api import header, types
-from . import BASS
+
+from .basson import Basson
 
 # StreamCreate #TODO
 
 # StreamCreateFile
 class StreamFile (Channel):
-    def __init__(self, bass:BASS, mem:bool, file:str, offset:int=0, length:int=0, 
-                 flags:header.SampleFlags|header.StreamFlags|header.CommonFlags=0):
-        self.bass = bass.bass 
+    def __init__(self, basson:Basson, mem:bool, file:str, offset:int=0, length:int=0, 
+                 flags:api.SampleFlag|api.StreamFlag|api.CommonFlag=0):
+        self.bass = basson.bass 
 
         self.HANDLE = self.bass.StreamCreateFile(mem, file, offset, length, flags)
-        self.WHOAMI = header.ChannelType.STREAM
+        self.WHOAMI = api.ChannelType.STREAM
 
     def __delattr__(self, name):
         self.bass.StreamFree(self._handle)
@@ -21,17 +21,17 @@ class StreamFile (Channel):
 
 # StreamCreateURL
 class StreamURL (Channel):
-    def __init__(self, bass:BASS, url:str, offset:int=0, 
-                 flags:header.SampleFlags|header.StreamFlags|header.CommonFlags=0,
-                 proc:types.DownloadProcType=None, user:types.PTR=None):
+    def __init__(self, bass:Basson, url:str, offset:int=0, 
+                 flags:api.SampleFlag|api.StreamFlag|api.CommonFlag=0,
+                 proc:api.DownloadProcType=None, user:api.PTR=None):
         self.bass = bass.bass
 
         #FIXME не работает передача proc - access violation
-        self._proc = types.DOWNLOADPROC(proc) if proc is not None else None
+        self._proc = api.DOWNLOADPROC(proc) if proc is not None else None
         c_url = url.encode('utf-8')
         
         self.HANDLE = self.bass.StreamCreateURL(c_url, offset, flags, self._proc, user)
-        self.WHOAMI = header.ChannelType.STREAM
+        self.WHOAMI = api.ChannelType.STREAM
     
     def __delattr__(self, name):
         self.bass.StreamFree(self._handle)

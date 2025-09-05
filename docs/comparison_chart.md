@@ -5,7 +5,7 @@
 
 Basson | BASS | Comment
 --- | --- | ---
-`BASS.error_code`   | `BASS_ErrorGetCode()` | Probably useless, because wraper itself raises `BassException` and other exceptions, if BASS function returns 'error' value. Of course, if `BASS.__init__(.., safe_execution=True)`
+`BASS.error_code`   | `BASS_ErrorGetCode()` | Probably useless, because wraper itself raises `BASSException` and other exceptions, if BASS function returns 'error' value. Of course, if `BASS.__init__(.., safe_execution=True)`
 `BASS.__delattr__()` | `BASS_Free()` | After object destruction BASS frees himself
 `BASS.cpu_usage`    | `BASS_GetCPU()` | Renamed for clarity of understanding
 `BASS.device`       | `BASS_GetDevice()`, `BASS_SetDevice()` | .

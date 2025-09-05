@@ -2,7 +2,6 @@
 
 import ctypes
 
-@staticmethod
 def get_os() -> str:
     """ Returns OS name"""
     import platform
@@ -36,7 +35,6 @@ def get_os() -> str:
     else:
         return 'unknown'
 
-@staticmethod
 def get_locale() -> str:
     ''' Return OS locale encoder name '''
     import locale
@@ -57,14 +55,12 @@ def decode_version(version:int) -> str:
     build = version & 0xFF
     return f"{major}.{minor}.{patch}.{build}"
 
-@staticmethod
 def read_ptr(ptr:ctypes.c_void_p, read_type:str = 'str', struct_type = None):
    if struct_type is not None: return ctypes.cast(ptr, ctypes.POINTER(struct_type)).contents
    match read_type:
       case 'str': return ctypes.cast(ptr, ctypes.c_char_p).value.decode('utf-8')
       case _: raise ValueError(f"Invalid cast type: {read_type}")
 
-@staticmethod
 def make_ptr(value, value_type:str = 'str', struct_type = None):
     #FIXME probably it's wrong, cuz need to keep created pointer, but for now it works
     if struct_type is not None: return ctypes.byref(struct_type), value
@@ -75,7 +71,6 @@ def make_ptr(value, value_type:str = 'str', struct_type = None):
 
         case _: raise ValueError(f"Invalid value type: {value_type}")
 
-@staticmethod
 def safe_decode(b: bytes) -> str:
     import locale
     return b.decode(locale.getpreferredencoding(), errors='replace')

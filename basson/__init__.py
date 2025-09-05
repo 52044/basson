@@ -1,37 +1,39 @@
-# Core object
-from .BASS import BASS
-from .stream import StreamFile, StreamURL
-
-# Exception class
-from .api.api import BassException
-
-# Additional utilities
-from . import utils
-
-# IntFlags & IntEnums
-from .api.header import (
-    #1                  #2                  #3                  #4
-    IOSSessionFlags,    DeviceFlags,        D3AlorithmsOptions, SampleFlags,        
-    StreamFlags,        PosOptions,         ChannelOptions,     DataFlags, 
-    DataLengthOptions,  
+from .api import (
+    BASS,       # API provider
+    BASSError   # Exception class
     )
 
-# Custom flags & emums
-from .api.header import (
+from .basson import Basson
+
+from .header import ( # Flags and Enums. OG
     #1                  #2                  #3                  #4
-    NetPlaylistOptions, NorampOptions,      SamplerateConversionOptions, StatusOptions,
-    InfoFlags,          DXVersionOptions,   CommonFlags,        ChannelType,
-    )
+    ConfigOption,       IOSSessionFlag,     DeviceFlag,         D3AlorithmsOption,
+    CommonFlag,         StatusOption,       NetPlaylistOption,  DXVersionOption,
+    NorampOption,       SamplerateConversionOption, ChannelType, DataLengthOption,
+    DataFlag,           PosModeOption,      ChannelOption,      SampleFlag,
+    StreamFlag,         InfoFlag,           
+)
 
-__all__ = ["BASS", "BassException",
-           "StreamFile", "StreamURL",
-           "utils",
-           
-           #1                   #2                  #3                  #4
-           "IOSSessionFlags",   "DeviceFlags",      "D3AlorithmsOptions", "SampleFlags", 
-           "StreamFlags",       "PosOptions",       "ChannelOptions",   "DataFlags", 
-           "DataLengthOptions",
+from .structures import (
+    Info,               DeviceInfo,
+)
 
-           "NetPlaylistOptions", "NorampOptions",   "SamplerateConversionOptions", "StatusOptions",
-           "InfoFlags",         "DXVersionOptions", "CommonFlags",      "ChannelType",
-           ]
+from .stream import (
+    StreamFile,         StreamURL,
+)
+
+__all__ = [
+    "BASS", "BASSError", 
+    "Basson",
+
+    #1                  #2                  #3                  #4
+    "ConfigOption",     "IOSSessionFlag",   "DeviceFlag",       "D3AlorithmsOption", 
+    "CommonFlag",       "StatusOption",     "NetPlaylistOption", "DXVersionOption",
+    "NorampOption",     "SamplerateConversionOption", "ChannelType", "DataLengthOption",
+    "DataFlag",         "PosModeOption",    "ChannelOption",    "SampleFlag",
+    "StreamFlag",       "InfoFlag",         
+
+    "Info",             "DeviceInfo",
+
+    "StreamFile",       "StreamURL",
+    ]
