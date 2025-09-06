@@ -64,6 +64,7 @@ class Channel():
     def length(self) -> int | None:
         '''Length of channel\n
         Same as `.length_get(basson.PosModeOption.BYTE)'''
+        return self.length_get(api.PosModeOption.BYTE)
 
     # level (LevelEx)
 
