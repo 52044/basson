@@ -8,12 +8,12 @@ Python user-frendly wrapper over [original BASS library](https://www.un4seen.com
 
 **Make sure, what your project is not violating BASS license** (you can read that in `LICENSE.BASS.md`)
 
-***PROJECT IS DEVELOPMENT, SO ALOT IS NOT IMPLEMENTED YET***
+***PROJECT IS IN DEVELOPMENT, SO ALOT IS NOT IMPLEMENTED YET***
 
 ## Advantages
 
 * `Stream`, `Music`, `Sample`, `Record` presented as in original BASS, nothing new has been invented
-* All `Channel` parameters implemented as properties (no more `BASS_GetAttribute`!)
+* No more `BASS_GetAttribute` and `BASS_ChannelGetAttribute`, just regular properties
 * Safe execution (BASS errors raises exceptions)
 * Proper inline documentation*
 * Access to BASS API directly, via `basson.bass.__xyz__`

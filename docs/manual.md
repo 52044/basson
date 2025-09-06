@@ -11,7 +11,7 @@ At first, you need to load OS specific library file as initialization parameter
 ```python
 import basson
 
-match basson.utils.get_os()
+match basson.get_os()
     case 'windows':
         path = 'path_to_your.dll'
     case 'macos':
@@ -21,7 +21,7 @@ match basson.utils.get_os()
     #etc
     
 player = basson.BASS('path_to_your.dll')
-player.init(-1, 44100, basson.DeviceFlags.STEREO)
+player.init(-1, 44100)
 ```
 
 Then you can use that object while creating new channels. Changing parameters of main class affects to all referenced objects.
@@ -40,7 +40,7 @@ Channel in BASS - some sort of container of user provided data. It can be repres
 
 * **Stream** - audio file is streamed from filesystem or internet
 * **Sample** - audio file is loaded in memory 
-* **Music** - tracker audio file (`*.MOD` or `*.MO3`)
+* **Music** - tracker audio file (`*.MOD`, `*.MO3` or other)
 * **Record** - channel desined for creating new audio files
 
 Before creating new channel, requied create and initialize BASS, after that you can create desirable type of channel. 
@@ -49,23 +49,23 @@ You cannot directly create a "generic" channel and change it later, because BASS
 
 ```cpp
 ...
-const int mp3 = BASS_StreamCreateFile(0, 'path_to_your.mp3', 0, 0);
+int mp3 = BASS_StreamCreateFile(0, 'path_to_your.mp3', 0, 0);
 BASS_ChannelSetPosition(mp3, BASS_ChannelSeconds2Bytes(mp3, 30.5), BASS_POS_BYTE);
 BASS_ChannelSetAttribute(mp3, BASS_ATTRIB_VOL, 0.8);
 BASS_ChannelStart(mp3);
 ```
 
-By handles you can do thatever you want, but you also requied keep in mind, that you doing with handle and all (it a pure c, baby)
+By handles you can do thatever you want, but you also requied keep in mind, that you doing with that handle and all
 
 Les't have a look to our variant in Python:
 ```python
 ...
 mp3 = basson.StreamFile(buzz, 0, 'path_to_your.mp3')
-mp3.position = 30.5
+mp3.position = mp3.seconds2byte(30.5)
 mp3.volume = 0.8
 mp3.start()
 ```
 
 Much clenier, yea?
 
-Under the hood we do same operation. `mp3` object while creation contain `.HANDLE` variable, that allow do that we want.
+Under the hood we do same operation. `mp3` object while creation contain `.HANDLE` variable, that allow do same operations simplier.

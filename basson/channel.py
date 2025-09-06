@@ -141,7 +141,6 @@ class Channel():
 # endregion
 
 # region ChannelGetAttibute(ex)
-#FIXME нужно писать в value, в возращатся результат выполнения, сейчас пока колхоз
     def _getconf(self, option):
         value = header.FLOAT()
         self.bass.ChannelGetAttribute(self.HANDLE, option, value)

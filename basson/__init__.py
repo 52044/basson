@@ -29,6 +29,8 @@ from .music import (
     Music
 )
 
+from utils import get_os
+
 __all__ = [
     "BASS", "BASSError", 
     "Basson",
@@ -44,5 +46,7 @@ __all__ = [
     "Info",             "DeviceInfo",
 
     "StreamFile",       "StreamURL",
-    "Music"
+    "Music",
+
+    "get_os"
     ]
