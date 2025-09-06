@@ -8,6 +8,8 @@ Python user-frendly wrapper over [original BASS library](https://www.un4seen.com
 
 **Make sure, what your project is not violating BASS license** (you can read that in `LICENSE.BASS.md`)
 
+***PROJECT IS DEVELOPMENT, SO ALOT IS NOT IMPLEMENTED YET***
+
 ## Advantages
 
 * `Stream`, `Music`, `Sample`, `Record` presented as in original BASS, nothing new has been invented

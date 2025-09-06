@@ -81,6 +81,7 @@ class Channel():
 
     @property
     def status(self):
+        #TODO what this return? flag?
         ''' Checks if a sample, stream, or MOD music is active (playing) or stalled. Can also check if a recording is in progress. '''
         return self.bass.ChannelIsActive(self.HANDLE)
     
@@ -265,7 +266,7 @@ class Channel():
             return int(self._getconf(api.ChannelOption.NORAMP))
         except api.BASSError as e:
             if e.code == api.BASSError.OK:
-                return 0
+                return header.NorampOption.ENABLE # default value
             else:
                 raise e
     @noramp.setter
@@ -280,7 +281,7 @@ class Channel():
             return self._getconf( api.ChannelOption.PAN)
         except api.BASSError as e:
             if e.code == api.BASSError.OK:
-                return 0.0
+                return 0.0 # default value
             else:
                 raise e
     @pan.setter
