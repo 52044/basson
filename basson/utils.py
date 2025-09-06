@@ -40,7 +40,6 @@ def get_locale() -> str:
     import locale
     return locale.getpreferredencoding()
 
-@staticmethod
 def decode_version(version:int) -> str:
     ''' Convers HEX value to human-understandable text
     

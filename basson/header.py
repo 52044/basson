@@ -23,7 +23,9 @@ TRUE = 1
 FALSE = 0 
 '''`False` value in BASS'''
 MINUSONE = 0xFFFFFFFF
-'''`-1` value'''
+'''`-1` value DWORD'''
+QMINUSONE = 0xFFFFFFFFFFFFFFFF
+'''`-1` value QWORD'''
 
 # Pointers types (handles) BASS
 #   There are different handle names for visual separating the destination. 
@@ -582,7 +584,7 @@ class StreamFlag(IntFlag):
 BASS_MP3_IGNOREDELAY        = 0x200 # ignore LAME/Xing/VBRI/iTunes delay & padding info
 BASS_MP3_SETPOS             = StreamFlag.PRESCAN
 
-class MusicFlags(IntFlag):
+class MusicFlag(IntFlag):
     FLOAT            = SampleFlag.FLOAT
     MONO             = SampleFlag.MONO
     LOOP             = SampleFlag.LOOP
@@ -607,7 +609,7 @@ class MusicFlags(IntFlag):
     NOSAMPLE         = 0x100000 # don't load the samples
 
 # Speaker assignment flags
-class SpeakerFlags(IntFlag):
+class SpeakerFlag(IntFlag):
     FRONT          = 0x1000000 # front speakers
     REAR           = 0x2000000 # rear speakers
     CENLFE         = 0x3000000 # center & LFE speakers (5.1)
@@ -943,3 +945,8 @@ class ChannelType(IntEnum):
     MUSIC =     2
     RECORD =    3
 
+class MusicFreqOption(IntEnum):
+    INIT = 0
+    '''Specified in `Basson.init()`'''
+    DEVICE = 1
+    '''Device current output rate'''

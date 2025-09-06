@@ -50,34 +50,46 @@ class Channel():
     def device(self, device:int):
         self.bass.ChannelSetDevice(self.HANDLE, device)
 
-    @property
-    def length(self, mode:api.PosModeOption=0):
-        ''' Returns length of channel
-
+    def length_get(self, mode:api.PosModeOption=api.PosModeOption.BYTE) -> int|None:
+        ''' Returns length of channel    
+        Notes:
+            If `.WHOAMI is 'Music'` and in `Music` initilization don't setted `basson.MusicFlag.PRESCAN` flag, will be return `None`
         :param mode: Mode of length
         :return: Length of channel
         '''
-        return self.bass.ChannelGetLength(self.HANDLE, mode)
+        var = self.bass.ChannelGetLength(self.HANDLE, mode)
+        return var if var != api.QMINUSONE else None
+
+    @property
+    def length(self) -> int | None:
+        '''Length of channel\n
+        Same as `.length_get(basson.PosModeOption.BYTE)'''
 
     # level (LevelEx)
 
-    @property
-    def position(self, mode:api.PosModeOption=0):
+    def position_get(self, mode:api.PosModeOption=api.PosModeOption.BYTE) -> int:
         ''' Returns position of channel
-
         :param mode: Mode of position
-        :return: Position of channel
         '''
-        return self.bass.ChannelGetPosition(self.HANDLE, mode)
-    @position.setter
+        return self.bass.ChannelGetPosition(self.HANDLE, api.PosModeOption.BYTE)
     #TODO add BASS_MUSIC_xxx flags
-    def position(self, value:int, mode:api.PosModeOption=0):
-        ''' Sets position of channel
+    def position_set(self, value:int, mode:api.PosModeOption=0):
+        ''' Sets position of channel, and some flags
 
         :param value: Position of channel
         :param mode: Mode of position
         '''
         self.bass.ChannelSetPosition(self.HANDLE, value, mode)
+
+    @property
+    def position(self) -> int:
+        ''' Position of channel in bytes\n
+        Same as `.position_get/set(basson.PosModeOption.BYTE)`
+        ''' 
+        return self.bass.ChannelGetPosition(self.HANDLE, api.PosModeOption.BYTE)
+    @position.setter
+    def position(self, value:int):
+        self.bass.ChannelSetPosition(self.HANDLE, value, api.PosModeOption.BYTE) 
 
     @property
     def status(self):

@@ -1,9 +1,11 @@
 from .api import (
     BASS,       # API provider
     BASSError   # Exception class
-    )
+)
 
-from .basson import Basson
+from .basson import (
+    Basson      # Main wrapper class
+)
 
 from .header import ( # Flags and Enums. OG
     #1                  #2                  #3                  #4
@@ -11,7 +13,8 @@ from .header import ( # Flags and Enums. OG
     CommonFlag,         StatusOption,       NetPlaylistOption,  DXVersionOption,
     NorampOption,       SamplerateConversionOption, ChannelType, DataLengthOption,
     DataFlag,           PosModeOption,      ChannelOption,      SampleFlag,
-    StreamFlag,         InfoFlag,           
+    StreamFlag,         InfoFlag,           MusicFreqOption,    MusicFlag,
+    SpeakerFlag,      
 )
 
 from .structures import (
@@ -20,6 +23,10 @@ from .structures import (
 
 from .stream import (
     StreamFile,         StreamURL,
+)
+
+from .music import (
+    Music
 )
 
 __all__ = [
@@ -31,9 +38,11 @@ __all__ = [
     "CommonFlag",       "StatusOption",     "NetPlaylistOption", "DXVersionOption",
     "NorampOption",     "SamplerateConversionOption", "ChannelType", "DataLengthOption",
     "DataFlag",         "PosModeOption",    "ChannelOption",    "SampleFlag",
-    "StreamFlag",       "InfoFlag",         
+    "StreamFlag",       "InfoFlag",         "MusicFreqOption",  "MusicFlag",
+    "SpeakerFlag",   
 
     "Info",             "DeviceInfo",
 
     "StreamFile",       "StreamURL",
+    "Music"
     ]

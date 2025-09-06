@@ -714,7 +714,7 @@ class BASS:
     def MusicLoad(self, mem:BOOL, file:PTR|None, offset:QWORD, length:DWORD, flags:DWORD, freq:DWORD) -> HMUSIC:
         """Loads a MOD music file.\n
         https://www.un4seen.com/doc/#bass/BASS_MusicLoad.html"""
-        result = self.dll.BASS_MisicLoad(mem, ctypes.byref(file), offset, length, flags, freq)
+        result = self.dll.BASS_MusicLoad(mem, file, offset, length, flags, freq)
         if self.safe and result == 0: self._raise_error('BASS_ChannelPlay')
         return result
     #endregion

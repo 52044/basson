@@ -15,7 +15,7 @@ class StreamFile (Channel):
         self.WHOAMI = api.ChannelType.STREAM
 
     def __delattr__(self, name):
-        self.bass.StreamFree(self._handle)
+        self.bass.StreamFree(self.HANDLE)
 
 # StreamCreateFileUser #TODO
 
@@ -34,7 +34,7 @@ class StreamURL (Channel):
         self.WHOAMI = api.ChannelType.STREAM
     
     def __delattr__(self, name):
-        self.bass.StreamFree(self._handle)
+        self.bass.StreamFree(self.HANDLE)
 
 # StreamGetFilePosition #TODO
 
