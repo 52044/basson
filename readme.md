@@ -27,8 +27,8 @@ Python user-frendly wrapper over [original BASS library](https://www.un4seen.com
 ```python
 import basson
 
-bass = basson.Basson(path_to_bass_dll)
-bass.init(-1, 44100, basson.DeviceFlags.STEREO)
-audio = basson.StreamFile(bass, 0, path_to_audio_file.mp3)
+bass = basson.Basson('path_to_bass_dll')
+bass.init(-1, 44100, basson.DeviceFlag.STEREO)
+audio = basson.StreamFile(bass, 0, 'path_to_audio_file.mp3')
 audio.play()
 ```

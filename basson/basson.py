@@ -311,8 +311,12 @@ class Basson():
     @property
     def libssl(self) -> str: 
         #FIXME LibSSL param can be None, and utils.read_ptr cannot understand that
+        #HACK bruh, just look for exception
         ''' Path to OpenSSL library. `None` - use default '''
-        return utils.read_ptr(self._getconfptr(cfgo.LIBSSL), 'str')
+        try:
+            return utils.read_ptr(self._getconfptr(cfgo.LIBSSL), 'str')
+        except AttributeError:
+            return None
     @libssl.setter
     def libssl(self, filename:str): 
         self._setconf(cfgo.LIBSSL, filename)

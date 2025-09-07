@@ -950,3 +950,9 @@ class MusicFreqOption(IntEnum):
     '''Specified in `Basson.init()`'''
     DEVICE = 1
     '''Device current output rate'''
+
+class MusicSurroundOption(IntEnum):
+    ''' Enable/disabe options for `Music` surround effect'''
+    OFF = 0
+    MODE1 = 1
+    MODE2 = 2

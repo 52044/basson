@@ -14,7 +14,7 @@ from .header import ( # Flags and Enums. OG
     NorampOption,       SamplerateConversionOption, ChannelType, DataLengthOption,
     DataFlag,           PosModeOption,      ChannelOption,      SampleFlag,
     StreamFlag,         InfoFlag,           MusicFreqOption,    MusicFlag,
-    SpeakerFlag,      
+    SpeakerFlag,        MusicSurroundOption,
 )
 
 from .structures import (
@@ -41,7 +41,7 @@ __all__ = [
     "NorampOption",     "SamplerateConversionOption", "ChannelType", "DataLengthOption",
     "DataFlag",         "PosModeOption",    "ChannelOption",    "SampleFlag",
     "StreamFlag",       "InfoFlag",         "MusicFreqOption",  "MusicFlag",
-    "SpeakerFlag",   
+    "SpeakerFlag",      "MusicSurroundOption",
 
     "Info",             "DeviceInfo",
 

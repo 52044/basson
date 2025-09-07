@@ -386,11 +386,12 @@ class Channel():
     def _getflag(self, flag:int) -> bool:
         return bool(self.bass.ChannelFlags(self.HANDLE, 0, 0) & flag)
     def _setflags(self, flag:int, value:bool):
-        self.bass.ChannelFlags(self.HANDLE, flag if value else 0, value)
+        self.bass.ChannelFlags(self.HANDLE, flag if value else 0, flag)
 
     @property
     def loop(self) -> bool:
-        ''' Loop the channel '''
+        ''' Loop the channel\n
+        Cannot be affected at `Music`, if it loops itself'''
         return self._getflag(api.SampleFlag.LOOP)
     @loop.setter
     def loop(self, value:bool):
@@ -404,14 +405,15 @@ class Channel():
     def mutemax(self, value:bool):
         self._setflags(api.SampleFlag.MUTEMAX, value)
 
-    @property
-    def autofree(self) -> bool:
-        ''' Free the channel when playback ends '''
-        # Flag value is same for `Music` and `Stream`
-        return self._getflag(api.StreamFlag.AUTOFREE)
-    @autofree.setter
-    def autofree(self, value:bool):
-        self._setflags(api.StreamFlag.AUTOFREE, value)
+    # It propabaly can make alot of problems afterwards
+    #@property
+    #def autofree(self) -> bool:
+    #    ''' Free the channel when playback ends '''
+    #    # Flag value is same for `Music` and `Stream`
+    #    return self._getflag(api.StreamFlag.AUTOFREE)
+    #@autofree.setter
+    #def autofree(self, value:bool):
+    #    self._setflags(api.StreamFlag.AUTOFREE, value)
 
     @property
     def restrict_rate(self) -> bool:
@@ -454,21 +456,29 @@ class Channel():
         self._setflags(api.MusicFlag.RAMPS, value)
 
     @property
-    def surround(self) -> bool:
+    def surround(self) -> api.MusicSurroundOption:
         ''' Use surround sound '''
-        return self._getflag(api.MusicFlag.SURROUND)
+        mode1 = self._getflag(api.MusicFlag.SURROUND)
+        mode2 = self._getflag(api.MusicFlag.SURROUND2) 
+        if mode1:
+            return api.MusicSurroundOption.MODE1
+        elif mode2:
+            return api.MusicSurroundOption.MODE2
+        else:
+            return api.MusicSurroundOption.OFF
     @surround.setter
-    def surround(self, value:bool):
-        self._setflags(api.MusicFlag.SURROUND, value)
-
-    @property
-    def surround2(self) -> bool:
-        ''' Use surround sound, mode 2 '''
-        return self._getflag(api.MusicFlag.SURROUND2)
-    @surround2.setter
-    def surround2(self, value:bool):
-        self._setflags(api.MusicFlag.SURROUND2, value)
-
+    def surround(self, value:api.MusicSurroundOption):
+        match value:
+            case api.MusicSurroundOption.OFF:
+                self._setflags(api.MusicFlag.SURROUND, False)
+                self._setflags(api.MusicFlag.SURROUND2, False)
+            case api.MusicSurroundOption.MODE1:
+                self._setflags(api.MusicFlag.SURROUND, True)
+                #self._setflags(api.MusicFlag.SURROUND2, False) #IBASS did it itself
+            case api.MusicSurroundOption.MODE2:
+                #self._setflags(api.MusicFlag.SURROUND, False)
+                self._setflags(api.MusicFlag.SURROUND2, True)
+        
     @property
     def ft2mod(self) -> bool:
         ''' Use FastTracker 2 .mod playback '''
