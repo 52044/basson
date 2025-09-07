@@ -1,22 +1,25 @@
+from __future__ import annotations
+
 from .basson import Basson
 from . import api, header
 
 class Channel():
-    def __init__(self, bass:Basson, handle:int):
-        self.bass = bass.bass
-        ''' Current BASS library'''
-        self.HANDLE = handle
-        ''' Contain handle of current channel. Uses for any interaction with channel '''
-        self.WHOAMI:api.ChannelType = None
-        ''' Tells that a object is '''
-
-        raise TypeError("This class cannot be created directly. Use Streams, Music, Samples for creating this object")
-
+    def __init__(self, bass:Basson=None, handle:int=None):
         
+        if 0: #HACK Just for doctrings
+            self.bass = bass.bass
+            ''' Current BASS library'''
+            self.HANDLE = handle
+            ''' Contain handle of current channel. Uses for any interaction with channel '''
+            self.WHOAMI:api.ChannelType = None
+            ''' Tells that a object is '''
+        self._links = []
+        ''' List of channels that are linked to this channel'''
+
+
     def __delattr__(self, name):
         self.bass.ChannelFree(self.HANDLE)
 
-#region Core functions
     def bytes2seconds(self, bytes:int) -> float:
         ''' Converts bytes to seconds'''
         return self.bass.ChannelBytes2Seconds(self.HANDLE, bytes)
@@ -24,15 +27,7 @@ class Channel():
         ''' Converts seconds to bytes'''
         return self.bass.ChannelSeconds2Bytes(self.HANDLE, seconds)
 
-    #get3dattributes
-    #get3dposition
-
-    #def get_data(self, buffer:bytearray, length:api.DataLengthOption|api.DataFlag|int):
-    #    ''' Retrieves the immediate sample data (or an FFT representation of it) of a sample channel, stream, MOD music, or recording channel.'''
-    #    c_buffer = buffer
-    #    self.bass.ChannelGetData(self.HANDLE, c_buffer, length)
-    #    return c_buffer
-
+#region Core functions
     @property
     def device(self) -> int:
         ''' Number of system device, in usage by this channel
@@ -66,17 +61,13 @@ class Channel():
         Same as `.length_get(basson.PosModeOption.BYTE)'''
         return self.length_get(api.PosModeOption.BYTE)
 
-    # level (LevelEx)
-
-    def position_get(self, mode:api.PosModeOption=api.PosModeOption.BYTE) -> int:
+    def position_get(self, mode:api.PosModeOption|api.MusicFlag=api.PosModeOption.BYTE) -> int:
         ''' Returns position of channel
         :param mode: Mode of position
         '''
-        return self.bass.ChannelGetPosition(self.HANDLE, api.PosModeOption.BYTE)
-    #TODO add BASS_MUSIC_xxx flags
-    def position_set(self, value:int, mode:api.PosModeOption=0):
+        return self.bass.ChannelGetPosition(self.HANDLE, mode)
+    def position_set(self, value:int, mode:api.PosModeOption|api.MusicFlag):
         ''' Sets position of channel, and some flags
-
         :param value: Position of channel
         :param mode: Mode of position
         '''
@@ -97,9 +88,6 @@ class Channel():
         #TODO what this return? flag?
         ''' Checks if a sample, stream, or MOD music is active (playing) or stalled. Can also check if a recording is in progress. '''
         return self.bass.ChannelIsActive(self.HANDLE)
-    
-    # IsSliding
-    # SlideAtrribute
 
     def lock(self, lock:bool):
         ''' Locks a channel '''
@@ -107,7 +95,6 @@ class Channel():
 
     def play(self, restart: bool = False):
         ''' Starts/resumes playback of channel. Same as `start`, but have option start from begining
-        
         :param restart: Start playback from begin
         '''
         try:
@@ -119,24 +106,50 @@ class Channel():
                 raise e
             
     def pause(self):
-        ''' Pauses playback/recording of channel
-        '''
+        ''' Pauses playback/recording of channel'''
         self.bass.ChannelPause(self.HANDLE)
 
     def stop(self):
-        ''' Stops playback/recording of channel
-        '''
+        ''' Stops playback/recording of channel'''
         self.bass.ChannelStop(self.HANDLE)   
 
     def start(self):
-        ''' Starts/resumes playback/recording of channel
-        '''
+        ''' Starts/resumes playback/recording of channel'''
         self.bass.ChannelStart(self.HANDLE)
 
-    #set/removeDSP
-    #set/removeFX
-    #set/removeLink
-    #set/removeSync
+    def link_set(self, channel:Channel):
+        ''' Links a channel to another channel'''
+        self.bass.ChannelSetLink(self.HANDLE, channel.HANDLE)
+        if channel not in self._links:
+            self._links.append(channel.HANDLE)
+            channel._links.append(self.HANDLE)
+        else:
+            pass
+
+    def link_remove(self, channel:Channel):
+        ''' Removes link a channel from another channel'''
+        self.bass.ChannelRemoveLink(self.HANDLE, channel.HANDLE)
+        if channel in self._links:
+            self._links.remove(channel.HANDLE)
+            channel._links.remove(self.HANDLE)
+        else:
+            pass
+
+    # set/removeDSP
+    # set/removeFX
+    # set/removeLink
+    # set/removeSync
+    # get3dattributes
+    # get3dposition
+    # IsSliding
+    # SlideAtrribute
+    # level (LevelEx)
+
+    #def get_data(self, buffer:bytearray, length:api.DataLengthOption|api.DataFlag|int):
+    #    ''' Retrieves the immediate sample data (or an FFT representation of it) of a sample channel, stream, MOD music, or recording channel.'''
+    #    c_buffer = buffer
+    #    self.bass.ChannelGetData(self.HANDLE, c_buffer, length)
+    #    return c_buffer
     
 # endregion
 
@@ -148,9 +161,16 @@ class Channel():
     def _setconf(self, option, value):
         self.bass.ChannelSetAttribute(self.HANDLE, option, value)
 
+    #def _getconfex(self, option):
+    #    value = header.FLOAT()
+    #    self.bass.ChannelGetAttributeEx(self.HANDLE, option, value)
+    #    return value.value
+    #def _setconfex(self, option, value):
+    #    self.bass.ChannelSetAttributeEx(self.HANDLE, option, value)
+
     @property
     def bitrate(self) -> float:
-        ''' The average bitrate of a file stream '''
+        ''' The average bitrate of a file stream. '''
         return self._getconf(api.ChannelOption.BITRATE)
 
     @property
@@ -189,9 +209,16 @@ class Channel():
         self._setconf( api.ChannelOption.GRANULE, value)
         
     @property
-    def music_active(self) -> float:
+    def music_active(self) -> int:
         ''' The number of active channels in a MOD music '''
-        return self._getconf(api.ChannelOption.MUSIC_ACTIVE)
+        #HACK If music is stoped / not played yet it can raise error
+        try:
+            return int(self._getconf(api.ChannelOption.MUSIC_ACTIVE))
+        except api.BASSError as e:
+            if e.code == 0: 
+                return 0
+            else:
+                raise e
 
     @property
     def music_amplify(self) -> int:
@@ -349,7 +376,139 @@ class Channel():
         self._setconf(api.ChannelOption.VOLDSP_PRIORITY, value)
 
     # atrribute DownloadCallback #TODO поскольку работаем в python и мы будем сами писать эти callback, то вызов атрибута скорее всего не понадобится
-
     # atribute scaninfo
-
     # atribute user
+
+#endregion
+
+#region ChannelFlags
+
+    def _getflag(self, flag:int) -> bool:
+        return bool(self.bass.ChannelFlags(self.HANDLE, 0, 0) & flag)
+    def _setflags(self, flag:int, value:bool):
+        self.bass.ChannelFlags(self.HANDLE, flag if value else 0, value)
+
+    @property
+    def loop(self) -> bool:
+        ''' Loop the channel '''
+        return self._getflag(api.SampleFlag.LOOP)
+    @loop.setter
+    def loop(self, value:bool):
+        self._setflags(api.SampleFlag.LOOP, value)
+
+    @property
+    def mutemax(self) -> bool:
+        ''' Mute the channel when it is at/beyond its max distance '''
+        return self._getflag(api.SampleFlag.MUTEMAX)
+    @mutemax.setter
+    def mutemax(self, value:bool):
+        self._setflags(api.SampleFlag.MUTEMAX, value)
+
+    @property
+    def autofree(self) -> bool:
+        ''' Free the channel when playback ends '''
+        # Flag value is same for `Music` and `Stream`
+        return self._getflag(api.StreamFlag.AUTOFREE)
+    @autofree.setter
+    def autofree(self, value:bool):
+        self._setflags(api.StreamFlag.AUTOFREE, value)
+
+    @property
+    def restrict_rate(self) -> bool:
+        ''' Restrict the download rate '''
+        return self._getflag(api.StreamFlag.RESTRATE)
+    @restrict_rate.setter
+    def restrict_rate(self, value:bool):
+        self._setflags(api.StreamFlag.RESTRATE, value)
+
+    @property
+    def noninter(self) -> bool:
+        ''' Use non-interpolated sample mixing '''
+        return self._getflag(api.MusicFlag.NONINTER)
+    @noninter.setter
+    def noninter(self, value:bool):
+        self._setflags(api.MusicFlag.NONINTER, value)
+
+    @property
+    def sincinter(self) -> bool:
+        ''' Use sinc interpolation '''
+        return self._getflag(api.MusicFlag.SINCINTER)
+    @sincinter.setter
+    def sincinter(self, value:bool):
+        self._setflags(api.MusicFlag.SINCINTER, value)
+
+    @property
+    def ramp(self) -> bool:
+        ''' Use "normal" ramping '''
+        return self._getflag(api.MusicFlag.RAMP)
+    @ramp.setter
+    def ramp(self, value:bool):
+        self._setflags(api.MusicFlag.RAMP, value)
+
+    @property
+    def ramps(self) -> bool:
+        ''' Use "sensetive" ramping '''
+        return self._getflag(api.MusicFlag.RAMPS)
+    @ramps.setter
+    def ramps(self, value:bool):
+        self._setflags(api.MusicFlag.RAMPS, value)
+
+    @property
+    def surround(self) -> bool:
+        ''' Use surround sound '''
+        return self._getflag(api.MusicFlag.SURROUND)
+    @surround.setter
+    def surround(self, value:bool):
+        self._setflags(api.MusicFlag.SURROUND, value)
+
+    @property
+    def surround2(self) -> bool:
+        ''' Use surround sound, mode 2 '''
+        return self._getflag(api.MusicFlag.SURROUND2)
+    @surround2.setter
+    def surround2(self, value:bool):
+        self._setflags(api.MusicFlag.SURROUND2, value)
+
+    @property
+    def ft2mod(self) -> bool:
+        ''' Use FastTracker 2 .mod playback '''
+        return self._getflag(api.MusicFlag.FT2MOD)
+    @ft2mod.setter
+    def ft2mod(self, value:bool):
+        self._setflags(api.MusicFlag.FT2MOD, value)
+
+    @property
+    def pt1mod(self) -> bool:
+        ''' Use ProTracker 1 .mod playback '''
+        return self._getflag(api.MusicFlag.PT1MOD)
+    @ft2mod.setter
+    def pt1mod(self, value:bool):
+        self._setflags(api.MusicFlag.PT1MOD, value)
+
+    @property
+    def posreset(self) -> bool:
+        ''' Stop all notes when seeking '''
+        return self._getflag(api.MusicFlag.POSRESET)
+    @posreset.setter
+    def posreset(self, value:bool):
+        self._setflags(api.MusicFlag.POSRESET, value)
+
+    @property
+    def posresetex(self) -> bool:
+        ''' Stop all notes and reset BPM/etc when seeking '''
+        return self._getflag(api.MusicFlag.POSRESETEX)
+    @posresetex.setter
+    def posresetex(self, value:bool):
+        self._setflags(api.MusicFlag.POSRESETEX, value)
+
+    @property
+    def stopback(self) -> bool:
+        ''' Stop when a backward jump effect is played '''
+        return self._getflag(api.MusicFlag.STOPBACK)
+    @stopback.setter
+    def stopback(self, value:bool):
+        self._setflags(api.MusicFlag.STOPBACK, value)
+
+    #speaker flags
+
+#endregion

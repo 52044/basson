@@ -29,7 +29,7 @@ from .music import (
     Music
 )
 
-from utils import get_os
+from .utils import get_os
 
 __all__ = [
     "BASS", "BASSError", 

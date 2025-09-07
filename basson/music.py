@@ -11,5 +11,7 @@ class Music(Channel):
         self.HANDLE = self.bass.MusicLoad(mem, file, offset, length, flags, freq)
         self.WHOAMI = api.ChannelType.MUSIC
 
+        super().__init__()
+
     def __delattr__(self, name):
         self.bass.MusicFree(self.HANDLE)

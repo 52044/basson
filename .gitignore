@@ -6,6 +6,7 @@ __pycache__
 .vscode
 *.old
 develop/
+chms/
 *.egg-info/
 
 # DLLs
