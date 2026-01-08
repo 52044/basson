@@ -1,7 +1,6 @@
-from . import api
-from .channel import Channel
-
 from .basson import Basson
+from .channel import Channel
+from . import api
 
 # StreamCreate #TODO
 
@@ -16,7 +15,7 @@ class StreamFile (Channel):
 
         super().__init__()
 
-    def __delattr__(self, name):
+    def __del__(self, name):
         self.bass.StreamFree(self.HANDLE)
 
 # StreamCreateFileUser #TODO
@@ -37,7 +36,7 @@ class StreamURL (Channel):
 
         super().__init__()
     
-    def __delattr__(self, name):
+    def __del__(self, name):
         self.bass.StreamFree(self.HANDLE)
 
 # StreamGetFilePosition #TODO

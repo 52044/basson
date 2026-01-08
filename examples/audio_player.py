@@ -127,7 +127,6 @@ class BassTkPlayer:
             finally:
                 self.updating_slider = False
 
-
 if __name__ == '__main__':
     root = tk.Tk()
     app = BassTkPlayer(root)

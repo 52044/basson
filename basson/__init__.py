@@ -14,7 +14,8 @@ from .header import ( # Flags and Enums. OG
     NorampOption,       SamplerateConversionOption, ChannelType, DataLengthOption,
     DataFlag,           PosModeOption,      ChannelOption,      SampleFlag,
     StreamFlag,         InfoFlag,           MusicFreqOption,    MusicFlag,
-    SpeakerFlag,        MusicSurroundOption,
+    SpeakerFlag,        MusicSurroundOption, RecordFlag,
+    RECORDPROC
 )
 
 from .structures import (
@@ -29,6 +30,10 @@ from .music import (
     Music
 )
 
+from .record import (
+    Record
+)
+
 from .utils import get_os
 
 __all__ = [
@@ -41,12 +46,14 @@ __all__ = [
     "NorampOption",     "SamplerateConversionOption", "ChannelType", "DataLengthOption",
     "DataFlag",         "PosModeOption",    "ChannelOption",    "SampleFlag",
     "StreamFlag",       "InfoFlag",         "MusicFreqOption",  "MusicFlag",
-    "SpeakerFlag",      "MusicSurroundOption",
+    "SpeakerFlag",      "MusicSurroundOption", "RecordFlag", 
+    "RECORDPROC"   
 
     "Info",             "DeviceInfo",
 
     "StreamFile",       "StreamURL",
     "Music",
+    "Record",
 
     "get_os"
     ]

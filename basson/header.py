@@ -57,7 +57,7 @@ STREAMPROC =    ctypes.CFUNCTYPE(DWORD, HSTREAM, PTR, PTR)
 StreamProcType = typing.Callable[[HSTREAM, PTR, PTR], DWORD]
 
 # Record callback
-RECORDPROC =    ctypes.CFUNCTYPE(BOOL, HRECORD, PTR, DWORD, PTR)
+RECORDPROC =    ctypes.CFUNCTYPE(BOOL, INT, PTR, DWORD, PTR)#second changed to int
 RecordProcType = typing.Callable[[HRECORD, PTR, DWORD, PTR], BOOL]
 
 # Channel callbacks
@@ -631,7 +631,7 @@ class SpeakerFlag(IntFlag):
 
 BASS_RECORD_ECHOCANCEL      = 0x2000
 BASS_RECORD_AGC             = 0x4000
-BASS_RECORD_PAUSE           = 0x8000 # start recording paused
+
 
 # DX7 voice allocation & management flags
 BASS_VAM_HARDWARE           = 1
@@ -956,3 +956,9 @@ class MusicSurroundOption(IntEnum):
     OFF = 0
     MODE1 = 1
     MODE2 = 2
+
+class RecordFlag(IntFlag):
+    '''Start recording flags for `Record`'''
+    BIT8 = SampleFlag.BITS8
+    FLOAT = SampleFlag.FLOAT
+    PAUSE = 0x8000 # start recording paused

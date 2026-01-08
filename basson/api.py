@@ -362,7 +362,7 @@ class BASS:
         """ Raises a BASSError if fucntion returns "failed" value """
         raise BASSError(self.ErrorGetCode(), name)
 
-    def __delattr__(self):
+    def __del__(self):
         try: self.Free()
         except BASSError as err:
             if err.code != 8: raise err # BASS_Init never called (err 8), so whatever
@@ -786,7 +786,7 @@ class BASS:
     def RecordStart(self, freq:DWORD, chans:DWORD, flags:DWORD, proc:RecordProcType|None, user:PTR|None) -> HRECORD:
         """Starts recording.\n
         https://www.un4seen.com/doc/#bass/BASS_RecordStart.html"""
-        c_proc = RECORDPROC(proc)
+        c_proc = RECORDPROC(proc) if proc else None
         result = self.dll.BASS_RecordStart(freq, chans, flags, c_proc, user)
         if self.safe and result == 0: self._raise_error('BASS_RecordStart')
         return result

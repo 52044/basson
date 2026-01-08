@@ -17,7 +17,7 @@ class Channel():
         ''' List of channels that are linked to this channel'''
 
 
-    def __delattr__(self, name):
+    def __del__(self, name):
         self.bass.ChannelFree(self.HANDLE)
 
     def bytes2seconds(self, bytes:int) -> float:

@@ -17,9 +17,9 @@ class Basson():
         
         #self.config = pstrct.BassConfig(self.bass)
 
-    def __delattr__(self, name):
+    def __del__(self, name):
         #Safe closing
-        self.bass.__delattr__(name)
+        self.bass.__del__(name)
 
 #region Core functions
     @property
