@@ -6,6 +6,7 @@ from .api import (
 from .basson import (
     Basson      # Main wrapper class
 )
+Basson = Basson #HACK if import library as tells `readme.md`, for acess requied `from basson import basson`, instead just a `import bassson`. Solution provided by AI and requied testing 
 
 from .header import ( # Flags and Enums. OG
     #1                  #2                  #3                  #4

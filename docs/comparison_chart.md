@@ -66,30 +66,68 @@ Basson | BASS | Comment
 `Basson.verify_net`   | `BASS_*Config*(BASS_CONFIG_VERIFY_NET)` | 
 `Basson.wasapi_persist` | `BASS_*Config*(BASS_CONFIG_WASAPI_PERSIST)` | 
 
-### class Channel
+### class Channel _(and all classes inheriting it)_
 
 Basson | BASS | Comment
---- | --- | ---
+--- | --- | ---|
 `Basson.Channel.WHOAMI` | - | Contain `Basson.ChannelType` flag
 `Basson.Channel.HANDLE` | - | Contain BASS handle of channel
 `Basson.Channel.bytes2seconds()` | `BASS_ChannelBytes2Seconds()` |
 `Basson.Channel.seconds2bytes()` | `BASS_ChannelSeconds2Bytes()` |
-NIE | `BASS_ChannelGet3DAttributes()` |
-NIE | `BASS_ChannelGet3DPosition()` |
-NIE | `BASS_ChannelGetData()` |
+NIE                     | `BASS_ChannelGet3DAttributes()` |
+NIE                     | `BASS_ChannelGet3DPosition()` |
+NIE                     | `BASS_ChannelGetData()` |
 `Basson.Channel.deivce` | `BASS_ChannelGetDevice()`, `BASS_ChannelSetDevice()` |
 `Basson.Channel.length`, `Basson.Channel.length_get()` | `BASS_ChannelGetLength()` | Renamed for ease of understanding. Have simple property as assign for main function
-NIE | `BASS_ChannelLevel()` |
+NIE                     | `BASS_ChannelLevel()` |
 `Basson.Channel.position`, `Basson.Channel.position_get()`, `Basson.Channel.position_set()` | `BASS_ChannelGetPosition()`, `BASS_ChannelSetPosition()`| Renamed for ease of understanding. Have simple property as assign for main function
 `Basson.Channel.status` | `BASS_ChannelIsActive()` | Renamed for ease of understanding
-NIE | `BASS_ChannelIsSliding()` |
-NIE | `BASS_ChannelSlideAttribute()` |
+NIE                     | `BASS_ChannelIsSliding()` |
+NIE                     | `BASS_ChannelSlideAttribute()` |
 `Basson.Channel.lock()` | `BASS_ChannelLock()` |
 `Basson.Channel.play()` | `BASS_ChannelPlay()` | Can be called without `.start()`
 `Basson.Channel.pause()` | `BASS_ChannelPause()` |
 `Basson.Channel.stop()` | `BASS_ChannelStop()` |
 `Basson.Channel.start()` | `BASS_ChannelStart()` |
-NIE | `BASS_ChannelSetDSP()`, `BASS_ChannelRemoveDSP()` |
-NIE | `BASS_ChannelSetDSP()`, `BASS_ChannelRemoveFX()` |
-NIE | `BASS_ChannelSetDSP()`, `BASS_ChannelRemoveLink()` |
-NIE | `BASS_ChannelSetDSP()`, `BASS_ChannelRemoveSync()` |
+NIE                     | `BASS_ChannelSetDSP()`, `BASS_ChannelRemoveDSP()` |
+NIE                     | `BASS_ChannelSetDSP()`, `BASS_ChannelRemoveFX()` |
+NIE                     | `BASS_ChannelSetDSP()`, `BASS_ChannelRemoveLink()` |
+NIE                     | `BASS_ChannelSetDSP()`, `BASS_ChannelRemoveSync()` |
+\-                      | `BASS_ChannelGetAttribute()`, `BASS_ChannelSetAttribute()`, `BASS_ChannelGetAttributeEx()`, `BASS_ChannelSetAttributeEx()`, `BASS_ChannelFlags()` | All configs implemented in main class as properties
+`Basson.Channel.bitrate` | `BASS_ChannelGetAtrribute(BASS_ATTRIB_BITRATE)` | 
+`Basson.Channel.buffer` | `BASS_Channel*etAtrribute(BASS_ATTRIB_BITRATE)` |
+`Basson.Channel.cpu_usage` | `BASS_ChannelGetAtrribute(BASS_ATTRIB_CPU)` |
+`Basson.Channel.frequency` | `BASS_Channel*etAtrribute(BASS_ATTRIB_FREQ)` |
+`Basson.Channel.granule` | `BASS_Channel*etAtrribute(BASS_ATTRIB_GRANULE)` |
+`Basson.Channel.music_active` | `BASS_ChannelGetAtrribute(BASS_ATTRIB_MUSIC_ACTTIVE)` |
+`Basson.Channel.music_amplify` | `BASS_Channel*etAtrribute(BASS_ATTRIB_MUSIC_AMPLIFY)` |
+`Basson.Channel.music_bpm` | `BASS_Channel*etAtrribute(BASS_ATTRIB_MUSIC_BPM)` |
+`Basson.Channel.music_pansep` | `BASS_Channel*etAtrribute(BASS_ATTRIB_MUSIC_PANSEP)` |
+`Basson.Channel.music_position_scaler` | `BASS_Channel*etAtrribute(BASS_ATTRIB_MUSIC_PSCALER)` |
+`Basson.Channel.music_speed` | `BASS_Channel*etAtrribute(BASS_ATTRIB_MUSIC_SPEED)` |
+`Basson.Channel.music_volume` | `BASS_Channel*etAtrribute(BASS_ATTRIB_MUSIC_VOLUME)` |
+`Basson.Channel.music_volume_instrument` | `BASS_Channel*etAtrribute(BASS_ATTRIB_MUSIC_VOL_INST)` |
+`Basson.Channel.net_resume` | `BASS_Channel*etAtrribute(BASS_ATTRIB_NET_RESUME)` |
+`Basson.Channel.noramp` | `BASS_Channel*etAtrribute(BASS_ATTRIB_NORAMP)` |
+`Basson.Channel.pan`    | `BASS_Channel*etAtrribute(BASS_ATTRIB_PAN)` |
+`Basson.Channel.push_limit` | `BASS_Channel*etAtrribute(BASS_ATTRIB_PUSH_LIMIT)` |
+`Basson.Channel.src`    | `BASS_Channel*etAtrribute(BASS_ATTRIB_SRC)` |
+`Basson.Channel.tail`   | `BASS_Channel*etAtrribute(BASS_ATTRIB_TAIL)` |
+`Basson.Channel.volume` | `BASS_Channel*etAtrribute(BASS_ATTRIB_VOL)` |
+`Basson.Channel.dsp_volume` | `BASS_Channel*etAtrribute(BASS_ATTRIB_VOLDSP)` |
+`Basson.Channel.dsp_volume_priority` | `BASS_Channel*etAtrribute(BASS_ATTRIB_VOLDSP_PRIORITY)` |
+`Basson.Channel.loop`   | `BASS_ChannelFlags(BASS_SAMPLE_LOOP)` |
+`Basson.Channel.mutemax` | `BASS_ChannelFlags(BASS_SAMPLE_MUTEMAX)` |
+NIE                     | `BASS_ChannelFlags(BASS_STREAM_AUTOFREE)` |
+`Basson.Channel.restrict_rate` | `BASS_ChannelFlags(BASS_STREAM_RESTRATE)` |
+`Basson.Channel.noninter` | `BASS_ChannelFlags(BASS_MUSIC_NONINTER)` |
+`Basson.Channel.sinter` | `BASS_ChannelFlags(BASS_MUSIC_SINTER)` |
+`Basson.Channel.ramp`   | `BASS_ChannelFlags(BASS_MUSIC_RAMP)` |
+`Basson.Channel.noninter` | `BASS_ChannelFlags(BASS_MUSIC_NONINTER)` |
+`Basson.Channel.surround` | `BASS_ChannelFlags(BASS_MUSIC_SURROUND)`, `BASS_ChannelFlags(BASS_MUSIC_SURROUND2)` |
+`Basson.Channel.ft2mod` | `BASS_ChannelFlags(BASS_MUSIC_FT2MOD)` |
+`Basson.Channel.pt1mod` | `BASS_ChannelFlags(BASS_MUSIC_PT1MOD)` |
+`Basson.Channel.posreset` | `BASS_ChannelFlags(BASS_MUSIC_POSRESET)` |
+`Basson.Channel.posresetex` | `BASS_ChannelFlags(BASS_MUSIC_POSRESETEX)` |
+`Basson.Channel.stopback` | `BASS_ChannelFlags(BASS_MUSIC_STOPBACK)` |
+NIE                      | `BASS_ChannelFlags(BASS_SPEAKER_xxx)` |

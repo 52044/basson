@@ -183,7 +183,7 @@ class Channel():
         self._setconf(api.ChannelOption.BUFFER, value)
 
     @property
-    def cpu(self) -> float:
+    def cpu_usage(self) -> float:
         ''' The CPU usage of a channel in %'''
         return self._getconf(api.ChannelOption.CPU)
 
