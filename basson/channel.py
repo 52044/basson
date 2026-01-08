@@ -84,8 +84,7 @@ class Channel():
         self.bass.ChannelSetPosition(self.HANDLE, value, api.PosModeOption.BYTE) 
 
     @property
-    def status(self):
-        #TODO what this return? flag?
+    def status(self) -> header.ChannelStatus:
         ''' Checks if a sample, stream, or MOD music is active (playing) or stalled. Can also check if a recording is in progress. '''
         return self.bass.ChannelIsActive(self.HANDLE)
 
