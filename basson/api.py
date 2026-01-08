@@ -1111,6 +1111,7 @@ class BASSError(Exception):
         else:
             raise e
     """
+    #FIXME rework that to `Excepion.*error*`, rather than `Exceprion.code`
     OK           = 0
     """All is OK"""
     MEM          = 1

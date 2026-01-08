@@ -10,17 +10,13 @@ Basson = Basson #HACK if import library as tells `readme.md`, for acess requied 
 
 from .header import ( # Flags and Enums. OG
     #1                  #2                  #3                  #4
+    Info,               DeviceInfo,
     ConfigOption,       IOSSessionFlag,     DeviceFlag,         D3AlorithmsOption,
     CommonFlag,         StatusOption,       NetPlaylistOption,  DXVersionOption,
     NorampOption,       SamplerateConversionOption, ChannelType, DataLengthOption,
     DataFlag,           PosModeOption,      ChannelOption,      SampleFlag,
     StreamFlag,         InfoFlag,           MusicFreqOption,    MusicFlag,
-    SpeakerFlag,        MusicSurroundOption, RecordFlag,
-    RECORDPROC
-)
-
-from .structures import (
-    Info,               DeviceInfo,
+    SpeakerFlag,        MusicSurroundOption, 
 )
 
 from .channel import (
@@ -51,8 +47,7 @@ __all__ = [
     "NorampOption",     "SamplerateConversionOption", "ChannelType", "DataLengthOption",
     "DataFlag",         "PosModeOption",    "ChannelOption",    "SampleFlag",
     "StreamFlag",       "InfoFlag",         "MusicFreqOption",  "MusicFlag",
-    "SpeakerFlag",      "MusicSurroundOption", "RecordFlag", 
-    "RECORDPROC"   
+    "SpeakerFlag",      "MusicSurroundOption", 
 
     "Info",             "DeviceInfo",
 

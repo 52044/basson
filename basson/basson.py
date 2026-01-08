@@ -2,7 +2,7 @@ from . import api
 from .api import ConfigOption as cfgo
 from .api import MINUSONE
 
-from . import structures
+from . import header
 from . import utils
 
 class Basson():
@@ -90,7 +90,7 @@ class Basson():
         :raises BASSError.code == NOTAVAIL: Updating is already in process'''
         self.bass.Update(length)
     
-    def init(self, device:int, samplerate:int, flags:api.DeviceFlag):
+    def init(self, device:int, samplerate:int, flags:header.DeviceFlag):
         ''' Initialize output device 
         :param device: Number of desirable audio device.\n
             * `-1` is system default device
@@ -107,11 +107,11 @@ class Basson():
         self.bass.Init(device, samplerate, flags, 0, None)
 
     @property
-    def status(self) -> api.StatusOption:
+    def status(self) -> header.StatusOption:
         ''' Status of output device '''
         return self.bass.IsStarted()
     
-    def device_info(self, device:int) -> structures.DeviceInfo:
+    def device_info(self, device:int) -> header.DeviceInfo:
         ''' Retrives information on an output device
         :param device: The number of desirable device
         :raises BASSError.code == DEVICE: `device` is invalid'''
@@ -123,7 +123,7 @@ class Basson():
             'name': info.name.decode(utils.get_locale())
         }
     
-    def info(self) -> structures.Info:
+    def info(self) -> header.Info:
         ''' Get information of current using device. '''
         info = api.BASS_INFO()
         self.bass.GetInfo(info)
@@ -158,11 +158,11 @@ class Basson():
         self.bass.SetConfigPtr(option, value)
 
     @property
-    def algorithm3d(self) -> api.D3AlorithmsOption:  
+    def algorithm3d(self) -> header.D3AlorithmsOption:  
         ''' The positioning algorithm for 3D channels '''
         return self._getconf(cfgo.ALGORITHM3D)
     @algorithm3d.setter
-    def algorithm3d(self, algo: api.D3AlorithmsOption): 
+    def algorithm3d(self, algo: header.D3AlorithmsOption): 
         self._setconf(cfgo.ALGORITHM3D, algo)
 
     @property
@@ -300,12 +300,12 @@ class Basson():
         return self._getconf(cfgo.HANDLES)
                                           
     @property
-    def ios_session(self) -> api.IOSSessionFlag: 
+    def ios_session(self) -> header.IOSSessionFlag: 
         '''[iOS] Audio session configuration'''
         #TODO check for -1
         return self._getconf(cfgo.IOS_SESSION)
     @ios_session.setter
-    def ios_session(self, config: api.IOSSessionFlag): 
+    def ios_session(self, config: header.IOSSessionFlag): 
         self._setconf(cfgo.IOS_SESSION, config)
 
     @property
@@ -378,11 +378,11 @@ class Basson():
         self._setconf(cfgo.NET_PASSIVE, passive)
     
     @property
-    def net_playlist(self) -> api.NetPlaylistOption: 
+    def net_playlist(self) -> header.NetPlaylistOption: 
         ''' Enable process URLs in PSL and M3U playlists'''
         return self._getconf(cfgo.NET_PLAYLIST)
     @net_playlist.setter
-    def net_playlist(self, playlist:api.NetPlaylistOption): 
+    def net_playlist(self, playlist:header.NetPlaylistOption): 
         self._setconf(cfgo.NET_PLAYLIST, playlist)
 
     @property
@@ -438,11 +438,11 @@ class Basson():
         self._setconf(cfgo.NET_TIMEOUT, timeout)
 
     @property
-    def noramp(self) -> api.NorampOption:
+    def noramp(self) -> header.NorampOption:
         ''' Playback ramping setting'''
         return self._getconf(cfgo.NORAMP)
     @noramp.setter
-    def noramp(self, noramp:api.NorampOption): 
+    def noramp(self, noramp:header.NorampOption): 
         self._setconf(cfgo.NORAMP, noramp)
 
     @property
@@ -486,19 +486,19 @@ class Basson():
         self._setconf(cfgo.SAMPLE_ONEHANDLE, onehandle)
 
     @property
-    def src(self) -> api.SamplerateConversionOption|int: 
+    def src(self) -> header.SamplerateConversionOption|int: 
         ''' Default samplerate conversion quality'''
         return self._getconf(cfgo.SRC)
     @src.setter
-    def src(self, quality:api.SamplerateConversionOption|int):
+    def src(self, quality:header.SamplerateConversionOption|int):
         self._setconf(cfgo.SRC, quality)
 
     @property
-    def src_sample(self) -> api.SamplerateConversionOption|int: 
+    def src_sample(self) -> header.SamplerateConversionOption|int: 
         ''' Default samplerate conversion quality for sample channels'''
         return self._getconf(cfgo.SRC_SAMPLE)
     @src_sample.setter
-    def src_sample(self, quality:api.SamplerateConversionOption|int): 
+    def src_sample(self, quality:header.SamplerateConversionOption|int): 
         self._setconf(cfgo.SRC_SAMPLE, quality)
 
     @property
