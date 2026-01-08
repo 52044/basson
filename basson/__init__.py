@@ -22,6 +22,10 @@ from .structures import (
     Info,               DeviceInfo,
 )
 
+from .channel import (
+    Channel,
+)
+
 from .stream import (
     StreamFile,         StreamURL,
 )
@@ -50,6 +54,8 @@ __all__ = [
     "RECORDPROC"   
 
     "Info",             "DeviceInfo",
+
+    "Channel",
 
     "StreamFile",       "StreamURL",
     "Music",
