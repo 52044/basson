@@ -360,9 +360,8 @@ class BASS:
 
     def __del__(self):
         try: self.Free()
-        except BASSError as err:
-            if err.code != 8: raise err # BASS_Init never called (err 8), so whatever
-
+        except BASSError.Init: pass # BASS_Init never called (err 8), so whatever
+        
     #region BASS / Config
     def GetConfig(self, option: DWORD) -> DWORD:
         """ Retrieves the current value of a configuration option.\n
@@ -1095,51 +1094,51 @@ class BASS:
     def _raise_error(self, name):
         """ Raises a BASSError if fucntion returns "failed" value """
         match self.ErrorGetCode():
-            case 0 : BASSError.OK       (BASSError.OK.__doc__)
-            case 1 : BASSError.Mem      (BASSError.Mem.__doc__)
-            case 2 : BASSError.Fileopen (BASSError.Fileopen.__doc__)
-            case 3 : BASSError.Driver   (BASSError.Driver.__doc__)
-            case 4 : BASSError.BufLost  (BASSError.BufLost.__doc__)
-            case 5 : BASSError.Handle   (BASSError.Handle.__doc__)
-            case 6 : BASSError.Format   (BASSError.Format.__doc__)
-            case 7 : BASSError.Position (BASSError.Position.__doc__)
-            case 8 : BASSError.Init     (BASSError.Init.__doc__)
-            case 9 : BASSError.Start    (BASSError.Start.__doc__)
-            case 10: BASSError.Ssl      (BASSError.Ssl.__doc__)
-            case 11: BASSError.Reinit   (BASSError.Reinit.__doc__)
-            case 14: BASSError.Already  (BASSError.Already.__doc__)
-            case 17: BASSError.Notaudio (BASSError.Notaudio.__doc__)
-            case 18: BASSError.Nochan   (BASSError.Nochan.__doc__)
-            case 19: BASSError.Illtype  (BASSError.Illtype.__doc__)
-            case 20: BASSError.Illparam (BASSError.Illparam.__doc__)
-            case 21: BASSError.No3D     (BASSError.No3D.__doc__)
-            case 22: BASSError.NoEAX    (BASSError.NoEAX.__doc__)
-            case 23: BASSError.Device   (BASSError.Device.__doc__)
-            case 24: BASSError.Noplay   (BASSError.Noplay.__doc__)
-            case 25: BASSError.Freq     (BASSError.Freq.__doc__)
-            case 27: BASSError.Notfile  (BASSError.Notfile.__doc__)
-            case 29: BASSError.NoHW     (BASSError.NoHW.__doc__)
-            case 31: BASSError.Empty    (BASSError.Empty.__doc__)
-            case 32: BASSError.NoNet    (BASSError.NoNet.__doc__)
-            case 33: BASSError.Create   (BASSError.Create.__doc__)
-            case 34: BASSError.NoFX     (BASSError.NoFX.__doc__)
-            case 37: BASSError.NotAvail (BASSError.NotAvail.__doc__)
-            case 38: BASSError.Decode   (BASSError.Decode.__doc__)
-            case 39: BASSError.DX       (BASSError.DX.__doc__)
-            case 40: BASSError.Timeout  (BASSError.Timeout.__doc__)
-            case 41: BASSError.Fileform (BASSError.Fileform.__doc__)
-            case 42: BASSError.Speaker  (BASSError.Speaker.__doc__)
-            case 43: BASSError.Version  (BASSError.Version.__doc__)
-            case 44: BASSError.Codec    (BASSError.Codec.__doc__)
-            case 45: BASSError.Ended    (BASSError.Ended.__doc__)
-            case 46: BASSError.Busy     (BASSError.Busy.__doc__)
-            case 47: BASSError.Unstreamable (BASSError.Unstreamable.__doc__)
-            case 48: BASSError.Protocol (BASSError.Protocol.__doc__)
-            case 49: BASSError.Denied   (BASSError.Denied.__doc__)
+            case 0 : raise BASSError.OK       (BASSError.OK.__doc__)
+            case 1 : raise BASSError.Mem      (BASSError.Mem.__doc__)
+            case 2 : raise BASSError.Fileopen (BASSError.Fileopen.__doc__)
+            case 3 : raise BASSError.Driver   (BASSError.Driver.__doc__)
+            case 4 : raise BASSError.BufLost  (BASSError.BufLost.__doc__)
+            case 5 : raise BASSError.Handle   (BASSError.Handle.__doc__)
+            case 6 : raise BASSError.Format   (BASSError.Format.__doc__)
+            case 7 : raise BASSError.Position (BASSError.Position.__doc__)
+            case 8 : raise BASSError.Init     (BASSError.Init.__doc__)
+            case 9 : raise BASSError.Start    (BASSError.Start.__doc__)
+            case 10: raise BASSError.Ssl      (BASSError.Ssl.__doc__)
+            case 11: raise BASSError.Reinit   (BASSError.Reinit.__doc__)
+            case 14: raise BASSError.Already  (BASSError.Already.__doc__)
+            case 17: raise BASSError.Notaudio (BASSError.Notaudio.__doc__)
+            case 18: raise BASSError.Nochan   (BASSError.Nochan.__doc__)
+            case 19: raise BASSError.Illtype  (BASSError.Illtype.__doc__)
+            case 20: raise BASSError.Illparam (BASSError.Illparam.__doc__)
+            case 21: raise BASSError.No3D     (BASSError.No3D.__doc__)
+            case 22: raise BASSError.NoEAX    (BASSError.NoEAX.__doc__)
+            case 23: raise BASSError.Device   (BASSError.Device.__doc__)
+            case 24: raise BASSError.Noplay   (BASSError.Noplay.__doc__)
+            case 25: raise BASSError.Freq     (BASSError.Freq.__doc__)
+            case 27: raise BASSError.Notfile  (BASSError.Notfile.__doc__)
+            case 29: raise BASSError.NoHW     (BASSError.NoHW.__doc__)
+            case 31: raise BASSError.Empty    (BASSError.Empty.__doc__)
+            case 32: raise BASSError.NoNet    (BASSError.NoNet.__doc__)
+            case 33: raise BASSError.Create   (BASSError.Create.__doc__)
+            case 34: raise BASSError.NoFX     (BASSError.NoFX.__doc__)
+            case 37: raise BASSError.NotAvail (BASSError.NotAvail.__doc__)
+            case 38: raise BASSError.Decode   (BASSError.Decode.__doc__)
+            case 39: raise BASSError.DX       (BASSError.DX.__doc__)
+            case 40: raise BASSError.Timeout  (BASSError.Timeout.__doc__)
+            case 41: raise BASSError.Fileform (BASSError.Fileform.__doc__)
+            case 42: raise BASSError.Speaker  (BASSError.Speaker.__doc__)
+            case 43: raise BASSError.Version  (BASSError.Version.__doc__)
+            case 44: raise BASSError.Codec    (BASSError.Codec.__doc__)
+            case 45: raise BASSError.Ended    (BASSError.Ended.__doc__)
+            case 46: raise BASSError.Busy     (BASSError.Busy.__doc__)
+            case 47: raise BASSError.Unstreamable (BASSError.Unstreamable.__doc__)
+            case 48: raise BASSError.Protocol (BASSError.Protocol.__doc__)
+            case 49: raise BASSError.Denied   (BASSError.Denied.__doc__)
             #case MINUSONE: BASSError.Unknown (BASSError.Unknown.__doc__)
-            case _: BASSError.Unknown (BASSError.Unknown.__doc__)
+            case _: raise BASSError.Unknown (BASSError.Unknown.__doc__)
             
-class BASSError():
+class BASSError(BaseException):
     '''
     Class contain all BASS exceptions
     '''

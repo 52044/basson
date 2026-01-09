@@ -13,5 +13,8 @@ class Music(Channel):
 
         super().__init__()
 
-    def __delattr__(self, name):
-        self.bass.MusicFree(self.HANDLE)
+    def __del__(self):
+        try:
+            self.bass.StreamFree(self.HANDLE)
+        except AttributeError:
+            pass # self.HANDLE can be not existing, if Music doesn't return handle

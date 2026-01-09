@@ -15,8 +15,11 @@ class StreamFile (Channel):
 
         super().__init__()
 
-    def __del__(self, name):
-        self.bass.StreamFree(self.HANDLE)
+    def __del__(self):
+        try:
+            self.bass.StreamFree(self.HANDLE)
+        except AttributeError:
+            pass # self.HANDLE can be not existing, if StreamCreateFile doesn't return handle
 
 # StreamCreateFileUser #TODO
 
@@ -36,8 +39,11 @@ class StreamURL (Channel):
 
         super().__init__()
     
-    def __del__(self, name):
-        self.bass.StreamFree(self.HANDLE)
+    def __del__(self):
+        try:
+            self.bass.StreamFree(self.HANDLE)
+        except AttributeError:
+            pass # self.HANDLE can be not existing, if StreamCreateFile doesn't return handle
 
 # StreamGetFilePosition #TODO
 
