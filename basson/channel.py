@@ -36,9 +36,9 @@ class Channel():
             * `0` - no sound
             * `1...` - audio device   
             * `CommonFlag.NODEVICE` - no device
-        :raise BASSError.code == DEVICE: `device` is invalid
-        :raise BASSError.code == INIT: Requested device has not been initialized
-        :raise BASSError.code == NOTAVAIL: Only decoding channels are allowed to use the `CommonFlag.NODEVICE` option
+        :raise BASSError.Device: `device` is invalid
+        :raise BASSError.Init: Requested device has not been initialized
+        :raise BASSError.NotAvail: Only decoding channels are allowed to use the `CommonFlag.NODEVICE` option
         '''
         return self.bass.ChannelGetDevice(self.HANDLE)
     @device.setter
@@ -98,11 +98,8 @@ class Channel():
         '''
         try:
             self.bass.ChannelPlay(self.HANDLE, restart)
-        except api.BASSError as e:
-            if e.code == api.BASSError.START:
-                self.start()
-            else:
-                raise e
+        except api.BASSError.Start:
+                self.start()        
             
     def pause(self):
         ''' Pauses playback/recording of channel'''
@@ -201,8 +198,8 @@ class Channel():
         ''' The processing granularity of a channel '''
         try:
             return self._getconf(api.ChannelOption.GRANULE)
-        except api.BASSError as e:
-            if e.code == 0: return None
+        except api.BASSError.OK:
+            return None
     @granule.setter
     def granule(self, value:float):
         self._setconf( api.ChannelOption.GRANULE, value)
@@ -213,12 +210,9 @@ class Channel():
         #HACK If music is stoped / not played yet it can raise error
         try:
             return int(self._getconf(api.ChannelOption.MUSIC_ACTIVE))
-        except api.BASSError as e:
-            if e.code == 0: 
-                return 0
-            else:
-                raise e
-
+        except api.BASSError.OK:
+            return 0
+        
     @property
     def music_amplify(self) -> int:
         ''' The amplification level of a MOD music '''
@@ -302,11 +296,8 @@ class Channel():
         #   but BASS_ErrorGetCode says OK. So need to exclude raising exception in this situation
         try:
             return int(self._getconf(api.ChannelOption.NORAMP))
-        except api.BASSError as e:
-            if e.code == api.BASSError.OK:
-                return header.NorampOption.ENABLE # default value
-            else:
-                raise e
+        except api.BASSError.OK :
+            return header.NorampOption.ENABLE # default value
     @noramp.setter
     def noramp(self, value:header.NorampOption):
         self._setconf(api.ChannelOption.NORAMP, value)
@@ -317,11 +308,8 @@ class Channel():
         #HACK look at `noramp` comment
         try:
             return self._getconf( api.ChannelOption.PAN)
-        except api.BASSError as e:
-            if e.code == api.BASSError.OK:
-                return 0.0 # default value
-            else:
-                raise e
+        except api.BASSError.OK:
+            return 0.0 # default value
     @pan.setter
     def pan(self, value:float):
         self._setconf(api.ChannelOption.PAN, value)

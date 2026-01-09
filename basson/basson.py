@@ -14,12 +14,12 @@ class Basson():
 
         if dll_path == None: raise ValueError('Path to BASS library is invalid')
         self.bass = api.BASS(dll_path, safe_execution)
-        
-        #self.config = pstrct.BassConfig(self.bass)
 
-    def __del__(self, name):
+        self._has_record_channel = True # Flag for `Record` channel
+
+    def __del__(self):
         #Safe closing
-        self.bass.__del__(name)
+        self.bass.__del__()
 
 #region Core functions
     @property
@@ -38,9 +38,9 @@ class Basson():
         * `-1` is system default device
         * `0` is no sound device
         * `1...` is sound device by number\n
-        :raises BASSError.code == INIT (on get): `Basson.init()` hasn't been succsessfuly called
-        :raises BASSError.code == INIT (on set): Device has not been initialized
-        :raises BASSError.code == DEVICE: Device number is invalid'''
+        :raises BASSError.Init (on get): `Basson.init()` hasn't been succsessfuly called
+        :raises BASSError.Init (on set): Device has not been initialized
+        :raises BASSError.Device: Device number is invalid'''
         return self.bass.GetDevice()
     @device.setter
     def device(self, number:int): 
@@ -50,9 +50,9 @@ class Basson():
     def volume(self) -> float:
         ''' Master (system) volume level\n
         Value between `0.0 - 1.0`\n
-        :raises BASSError.code == INIT: `Basson.init()` hasn't been succsessfully called
-        :raises BASSError.code == NOTAVAIL: There is no volume control when using "no sound" device
-        :raises BASSError.code == ILLPARAM: Level is invalid'''
+        :raises BASSError.Init: `Basson.init()` hasn't been succsessfully called
+        :raises BASSError.NotAvail: There is no volume control when using "no sound" device
+        :raises BASSError.Illparam: Level is invalid'''
         return self.bass.GetVolume()
     @volume.setter
     def volume(self, level:float):
@@ -69,25 +69,25 @@ class Basson():
 
     def pause(self):
         ''' Stops output, pausing all channels (*Music* / *Samples* / *Streams*) 
-        :raises BASSError.code == INIT: `Basson.init()` hasn't been succsessfully called'''
+        :raises BASSError.Init: `Basson.init()` hasn't been succsessfully called'''
         self.bass.Pause()
 
     def start(self):
         ''' Starts/resumes output 
-        :raises BASSError.code == INIT: `Basson.init()` hasn't been succsessfully called
-        :raises BASSError.code == BUSY: **[iOS]** App's audio has been interrupted and cannot be resumed yet
-        :raises BASSError.code == REINIT: Device requied be reinitialized or in process of that'''
+        :raises BASSError.Init: `Basson.init()` hasn't been succsessfully called
+        :raises BASSError.Busy: **[iOS]** App's audio has been interrupted and cannot be resumed yet
+        :raises BASSError.Reinit: Device requied be reinitialized or in process of that'''
         self.bass.Start()
     
     def stop(self):
         ''' Stops output, stops all channels (*Music* / *Samples* / *Streams*)
-        :raises BASSError.code == INIT: `init` hasn't been succsessfully called'''
+        :raises BASSError.Init: `init` hasn't been succsessfully called'''
         self.bass.Stop()
 
     def update(self, length:int):
         ''' Updates *Stream* and *Music* channels playback buffers
         :param length: Amount of data to render, in ms
-        :raises BASSError.code == NOTAVAIL: Updating is already in process'''
+        :raises BASSError.NotAvail Updating is already in process'''
         self.bass.Update(length)
     
     def init(self, device:int, samplerate:int, flags:header.DeviceFlag):
@@ -98,12 +98,12 @@ class Basson():
             * `1...` is sound device by number
         :param samplerate: Samplerate of output audiostreams
         :param flags: Combinations of `DeviceFlag`
-        :raises BASSError.code == DEVICE: `device` is invalid
-        :raises BASSError.code == NOTAVAIL: `DeviceFlag.REINIT` cannot be used when `device` is -1
-        :raises BASSError.code == DRIVER: There is no avaliable device driver
-        :raises BASSError.code == BUSY: Something else has exclusive use of that `device`
-        :raises BASSError.code == FORMAT: `samplerate` is not supported by this `device`
-        :raises BASSError.code == MEM: There is insufficient memory'''
+        :raises BASSError.Device: `device` is invalid
+        :raises BASSError.NotAvail: `DeviceFlag.REINIT` cannot be used when `device` is -1
+        :raises BASSError.Driver: There is no avaliable device driver
+        :raises BASSError.Busy: Something else has exclusive use of that `device`
+        :raises BASSError.Format: `samplerate` is not supported by this `device`
+        :raises BASSError.Mem: There is insufficient memory'''
         self.bass.Init(device, samplerate, flags, 0, None)
 
     @property
@@ -114,28 +114,64 @@ class Basson():
     def device_info(self, device:int) -> header.DeviceInfo:
         ''' Retrives information on an output device
         :param device: The number of desirable device
-        :raises BASSError.code == DEVICE: `device` is invalid'''
+        :raises BASSError.Device: `device` is invalid'''
         info = api.BASS_DEVICEINFO()
         self.bass.GetDeviceInfo(device, info)
-        return {
-            'driver': info.driver.decode(),
-            'flags': info.flags,
-            'name': info.name.decode(utils.get_locale())
-        }
+        return header.DeviceInfo(
+            driver = info.driver,
+            flags = info.flags,
+            name = info.name.decode(utils.get_locale())
+        )
     
     def info(self) -> header.Info:
         ''' Get information of current using device. '''
         info = api.BASS_INFO()
         self.bass.GetInfo(info)
-        return {
-            'dsver': info.dsver,
-            'flags': info.flags,
-            'freq': info.freq,
-            'initflags': info.initflags,
-            'latency': info.latency,
-            'minbuf': info.minbuf,
-            'speakers': info.speakers
-        }
+        return header.Info(
+            dsver = info.dsver,
+            flags = info.flags,
+            freq = info.freq,
+            initflags = info.initflags,
+            latency = info.latency,
+            minbuf = info.minbuf,
+            speakers = info.speakers
+        )
+#endregion
+
+#region Recording
+    #@property
+    #def record_device(self) -> int:
+    #    ''' The number of current recording device\n
+    #    Device counts from `0`\n
+    #    Setter automaticly initializes recording device (`BASS_RecordInit()`)
+    #
+    #    :raises BASSError.code == DEVICE: Device number is invalid
+    #    :raises BASSError.code == DX: A sufficient version of DirectX is not installed
+    #    :raises BASSError.code == DRIVER: There is no available device driver'''
+    #    return self.bass.RecordGetDevice()
+    #@record_device.setter
+    #def record_device(self, device):
+    #    # Check if device is valid
+    #    self.record_device_info(device)
+    #
+    #    # Free device -> Initialize record device -> Change to that device
+    #    self.bass.RecordFree()
+    #    self.bass.RecordInit(device)
+    #    self.bass.RecordSetDevice(device)
+
+    def record_device_info(self, device) -> header.DeviceInfo:
+        ''' Retrives information about certain recording device '''
+        info = api.BASS_DEVICEINFO()
+        self.bass.RecordGetDeviceInfo(device, info)
+        return header.DeviceInfo(
+            name = (info.name).decode(utils.get_locale()),
+            flags = info.flags,
+            driver = info.driver
+        )
+
+    #recordgetinput
+    #recordgetinputname
+    #recordsetinput
 #endregion
 
 # region Config
@@ -143,16 +179,14 @@ class Basson():
     def _getconf(self, option:str): 
         try:
             return self.bass.GetConfig(option)
-        except api.BASSError as e:
-            if e.code == 20:
+        except api.BASSError.Illparam:
                 return None
     def _setconf(self, option:str, value:str): 
         self.bass.SetConfig(option, value)
     def _getconfptr(self, option:str):
         try:
             return self.bass.GetConfigPtr(option)
-        except api.BASSError as e:
-            if e.code == 20:
+        except api.BASSError.Illparam:
                 return None
     def _setconfptr(self, option:str, value:str): 
         self.bass.SetConfigPtr(option, value)

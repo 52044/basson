@@ -1004,3 +1004,10 @@ class ChannelInfo(typing.TypedDict):
     ''' Default samplerate'''
     chans:int
     ''' Number of channels'''
+
+class RecordInfo(typing.TypedDict):
+    flags: int #FIXME
+    formats: int
+    inputs: int
+    singlein: bool
+    freq: int

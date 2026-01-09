@@ -358,10 +358,6 @@ class BASS:
         self.dll.BASS_FXSetPriority.argtypes = [HFX, INT]
         self.dll.BASS_FXSetPriority.restype = BOOL
 
-    def _raise_error(self, name):
-        """ Raises a BASSError if fucntion returns "failed" value """
-        raise BASSError(self.ErrorGetCode(), name)
-
     def __del__(self):
         try: self.Free()
         except BASSError as err:
@@ -1093,159 +1089,155 @@ class BASS:
         result = self.dll.BASS_FXSetPriority(handle, priority)
         if self.safe and result == 0: self._raise_error('BASS_FXSetPriority')
         return result
-    #endregion
 #endregion
 
 #region BASSError exception
+    def _raise_error(self, name):
+        """ Raises a BASSError if fucntion returns "failed" value """
+        match self.ErrorGetCode():
+            case 0 : BASSError.OK       (BASSError.OK.__doc__)
+            case 1 : BASSError.Mem      (BASSError.Mem.__doc__)
+            case 2 : BASSError.Fileopen (BASSError.Fileopen.__doc__)
+            case 3 : BASSError.Driver   (BASSError.Driver.__doc__)
+            case 4 : BASSError.BufLost  (BASSError.BufLost.__doc__)
+            case 5 : BASSError.Handle   (BASSError.Handle.__doc__)
+            case 6 : BASSError.Format   (BASSError.Format.__doc__)
+            case 7 : BASSError.Position (BASSError.Position.__doc__)
+            case 8 : BASSError.Init     (BASSError.Init.__doc__)
+            case 9 : BASSError.Start    (BASSError.Start.__doc__)
+            case 10: BASSError.Ssl      (BASSError.Ssl.__doc__)
+            case 11: BASSError.Reinit   (BASSError.Reinit.__doc__)
+            case 14: BASSError.Already  (BASSError.Already.__doc__)
+            case 17: BASSError.Notaudio (BASSError.Notaudio.__doc__)
+            case 18: BASSError.Nochan   (BASSError.Nochan.__doc__)
+            case 19: BASSError.Illtype  (BASSError.Illtype.__doc__)
+            case 20: BASSError.Illparam (BASSError.Illparam.__doc__)
+            case 21: BASSError.No3D     (BASSError.No3D.__doc__)
+            case 22: BASSError.NoEAX    (BASSError.NoEAX.__doc__)
+            case 23: BASSError.Device   (BASSError.Device.__doc__)
+            case 24: BASSError.Noplay   (BASSError.Noplay.__doc__)
+            case 25: BASSError.Freq     (BASSError.Freq.__doc__)
+            case 27: BASSError.Notfile  (BASSError.Notfile.__doc__)
+            case 29: BASSError.NoHW     (BASSError.NoHW.__doc__)
+            case 31: BASSError.Empty    (BASSError.Empty.__doc__)
+            case 32: BASSError.NoNet    (BASSError.NoNet.__doc__)
+            case 33: BASSError.Create   (BASSError.Create.__doc__)
+            case 34: BASSError.NoFX     (BASSError.NoFX.__doc__)
+            case 37: BASSError.NotAvail (BASSError.NotAvail.__doc__)
+            case 38: BASSError.Decode   (BASSError.Decode.__doc__)
+            case 39: BASSError.DX       (BASSError.DX.__doc__)
+            case 40: BASSError.Timeout  (BASSError.Timeout.__doc__)
+            case 41: BASSError.Fileform (BASSError.Fileform.__doc__)
+            case 42: BASSError.Speaker  (BASSError.Speaker.__doc__)
+            case 43: BASSError.Version  (BASSError.Version.__doc__)
+            case 44: BASSError.Codec    (BASSError.Codec.__doc__)
+            case 45: BASSError.Ended    (BASSError.Ended.__doc__)
+            case 46: BASSError.Busy     (BASSError.Busy.__doc__)
+            case 47: BASSError.Unstreamable (BASSError.Unstreamable.__doc__)
+            case 48: BASSError.Protocol (BASSError.Protocol.__doc__)
+            case 49: BASSError.Denied   (BASSError.Denied.__doc__)
+            #case MINUSONE: BASSError.Unknown (BASSError.Unknown.__doc__)
+            case _: BASSError.Unknown (BASSError.Unknown.__doc__)
+            
+class BASSError():
+    '''
+    Class contain all BASS exceptions
+    '''
 
-class BASSError(Exception):
-    """ Exception class for BASS library.\n
-    Rasied, when BASS return *error* value after executing command, if `basson` created with `safe_executon = True` flag\n
-    If you want to determine error you can use comparason `BASSError.code` with his constants:
-    ```python
-    try:
-        basson.init(...)
-    except BASSError as e:
-        if e.code == BASSError.DEVICE:
-            print("Device is busy")
-        else:
-            raise e
-    """
-    #FIXME rework that to `Excepion.*error*`, rather than `Exceprion.code`
-    OK           = 0
-    """All is OK"""
-    MEM          = 1
-    """Memory error"""
-    FILEOPEN     = 2
-    """Cannot open the file"""
-    DRIVER       = 3
-    """Cannot find a free or valid driver"""
-    BUFLOST      = 4
-    """Sample buffer was lost"""
-    HANDLE       = 5
-    """Invalid handle"""
-    FORMAT       = 6
-    """Unsupported sample format"""
-    POSITION     = 7
-    """Invalid position"""
-    INIT         = 8
-    """`init` call was being failed"""
-    START        = 9
-    """`start` call was being failed"""
-    SSL          = 10
-    """SSL/HTTPS support isn't avaliable"""
-    REINIT       = 11
-    """Device reqied to be reinitialized"""
-    ALREADY      = 14
-    """Last action already done (`init`, `pause`, etc.)"""
-    NOTAUDIO     = 17
-    """File doesn't contain audio"""
-    NOCHAN       = 18
-    """Cannot get a free channel"""
-    ILLTYPE      = 19
-    """Illegal type specified"""
-    ILLPARAM     = 20
-    """Illegal parameter specified"""
-    NO3D         = 21
-    """Driver don't have 3D support"""
-    NOEAX        = 22
-    """Driver don't have EAX support"""
-    DEVICE       = 23
-    """Illegal device number"""
-    NOPLAY       = 24
-    """Channel not playing"""
-    FREQ         = 25
-    """Illegal samplerate"""
-    NOTFILE      = 27
-    """The stream is not a file stream"""
-    NOHW         = 29
-    """No hardware voices avaliable"""
-    EMPTY        = 31
-    """File don't have sample data"""
-    NONET        = 32
-    """Internet connection couldn't be opened"""
-    CREATE       = 33
-    """File couldn't be created"""
-    NOFX         = 34
-    """FX is not avaliable"""
-    NOTAVAIL     = 37
-    """Requested data or action is not avaliable"""
-    DECODE       = 38
-    """Channel is/isn't a decoding channel"""
-    DX           = 39
-    """Reqested DirectX version don't installed"""
-    TIMEOUT      = 40
-    """Connection timeout"""
-    FILEFORM     = 41
-    """Unsupported file format"""
-    SPEAKER      = 42
-    """Unavaliable speaker"""
-    VERSION      = 43
-    """Unsupported BASS version (used by plugins)"""
-    CODEC        = 44
-    """Codec is not avaliable or supported"""
-    ENDED        = 45
-    """File has been reached end"""
-    BUSY         = 46
-    """Device is busy"""
-    UNSTREAMABLE = 47
-    """File is unstremable"""
-    PROTOCOL     = 48
-    """Unsopported protocol"""
-    DENIED       = 49
-    """Access denied"""
-    #UNKNOWN      = -1 # some other mystery problem
-    UNKNOWN      = MINUSONE
-    """Some unknown error"""
+    class OK        (Exception):
+        """All is OK"""
+    class Mem       (Exception):
+        """Memory error"""
+    class Fileopen  (Exception):
+        """Cannot open the file"""
+    class Driver    (Exception):
+        """Cannot find a free or valid driver"""
 
-    # I fucking hate this, don't blame me
-    _decsription = {
-        OK: "All is OK",
-        MEM: "Memory error",
-        FILEOPEN: "Cannot open the file",
-        DRIVER: "Cannot find a free or valid driver",
-        BUFLOST: "Sample buffer was lost",
-        HANDLE: "Invalid handle",
-        FORMAT: "Unsupported sample format",
-        POSITION: "Invalid position",
-        INIT: "`init` call was being failed",
-        START: "`start` call was being failed",
-        SSL: "SSL/HTTPS support isn't avaliable",
-        REINIT: "Device reqied to be reinitialized",
-        ALREADY: "Last action already done (`init`, `pause`, etc.)",
-        NOTAUDIO: "File doesn't contain audio",
-        NOCHAN: "Cannot get a free channel",
-        ILLTYPE: "Illegal type specified",
-        ILLPARAM: "Illegal parameter specified",
-        NO3D: "Driver don't have 3D support",
-        NOEAX: "Driver don't have EAX support",
-        DEVICE: "Illegal device number",
-        NOPLAY: "Channel not playing",
-        FREQ: "Illegal samplerate",
-        NOTFILE: "The stream is not a file stream",
-        NOHW: "No hardware voices avaliable",
-        EMPTY: "File don't have sample data",
-        NONET: "Internet connection couldn't be opened",
-        CREATE: "File couldn't be created",
-        NOFX: "FX is not avaliable",
-        NOTAVAIL: "Requested data or action is not avaliable",
-        DECODE: "Channel is/isn't a decoding channel",
-        DX: "Reqested DirectX version don't installed",
-        TIMEOUT: "Connection timeout",
-        FILEFORM: "Unsupported file format",
-        SPEAKER: "Unavaliable speaker",
-        VERSION: "Unsupported BASS version (used by plugins)",
-        CODEC: "Codec is not avaliable or supported",
-        ENDED: "File has been reached end",
-        BUSY: "Device is busy",
-        UNSTREAMABLE: "File is unstremable",
-        PROTOCOL: "Unsopported protocol",
-        DENIED: "Access denied",
-        UNKNOWN: "Some unknown error",
-    }
+    class BufLost   (Exception):
+        """Sample buffer was lost"""
+    class Handle    (Exception):
+        """Invalid handle"""
+    class Format    (Exception):
+        """Unsupported sample format"""
+    class Position  (Exception):
+        """Invalid position"""
 
-    def __init__(self, code:int, function="<none>"):
-        self.code = code
-        self.message = f"Function {function} returned error {code}: {self._decsription[code]}"
-        super().__init__(self.message)
+    class Init      (Exception):
+        """`init` call was being failed"""
+    class Start     (Exception):
+        """`start` call was being failed"""
+    class Ssl       (Exception):
+        """SSL/HTTPS support isn't avaliable"""
+    class Reinit    (Exception):
+        """Device reqied to be reinitialized"""
+
+    class Already   (Exception):
+        """Last action already done (`init`, `pause`, etc.)"""
+    class Notaudio  (Exception):
+        """File doesn't contain audio"""
+    class Nochan    (Exception):
+        """Cannot get a free channel"""
+    class Illtype   (Exception):
+        """Illegal type specified"""
+
+    class Illparam  (Exception):
+        """Illegal parameter specified"""
+    class No3D      (Exception):
+        """Driver don't have 3D support"""
+    class NoEAX     (Exception):
+        """Driver don't have EAX support"""
+    class Device    (Exception):
+        """Illegal device number"""
+
+    class Noplay    (Exception):
+        """Channel not playing"""
+    class Freq      (Exception):
+        """Illegal samplerate"""
+    class Notfile   (Exception):
+        """The stream is not a file stream"""
+    class NoHW      (Exception):
+        """No hardware voices avaliable"""
+
+    class Empty     (Exception):
+        """File don't have sample data"""
+    class NoNet     (Exception):
+        """Internet connection couldn't be opened"""
+    class Create    (Exception):
+        """File couldn't be created"""
+    class NoFX      (Exception):
+        """FX is not avaliable"""
+
+    class NotAvail  (Exception):
+        """Requested data or action is not avaliable"""
+    class Decode    (Exception):
+        """Channel is/isn't a decoding channel"""
+    class DX        (Exception):
+        """Reqested DirectX version don't installed"""
+    class Timeout   (Exception):
+        """Connection timeout"""
+
+    class Fileform  (Exception):
+        """Unsupported file format"""
+    class Speaker   (Exception):
+        """Unavaliable speaker"""
+    class Version   (Exception):
+        """Unsupported BASS version (used by plugins)"""
+    class Codec     (Exception):
+        """Codec is not avaliable or supported"""
+
+    class Ended     (Exception):
+        """File has been reached end"""
+    class Busy      (Exception):
+        """Device is busy"""
+    class Unstreamable (Exception):
+        """File is unstremable"""
+    class Protocol  (Exception):
+        """Unsopported protocol"""
+
+    class Denied    (Exception):
+        """Access denied"""
+    class Unknown   (Exception):
+        """Some other mystery problem"""
+
+
 #endregion
